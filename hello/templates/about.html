@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock title %}About Us
+
+{% block body %}
+
+    <header>
+        <a href="/">Our Website</a>
+    </header>
+    
+    <div class="container">
+        <!-- About Us Section -->
+        <section class="about-us">
+            <h1>About Us</h1>
+            <p class="intro">We are a team of passionate professionals committed to providing high-quality services to our customers. Our goal is to deliver excellence in every project we take on.</p>
+            
+            <!-- Team Section -->
+            <div class="team-section">
+                <h2>Meet Our Team</h2>
+                <div class="team">
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h4>John Doe</h4>
+                        <p>CEO & Founder</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h4>Jane Smith</h4>
+                        <p>Chief Operating Officer</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h4>Mary Johnson</h4>
+                        <p>Lead Developer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Section -->
+            <div class="mission-section">
+                <h2>Our Mission</h2>
+                <p>To deliver innovative solutions that exceed expectations while maintaining the highest level of professionalism and customer satisfaction.</p>
+            </div>
+        </section>
+    </div>
+    
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa; /* Light background color for the page */
+            color: #343a40; /* Dark text color */
+            margin: 0;
+            padding: 0;
+        }
+    
+        header {
+            background-color: #343a40; /* Dark header background */
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+    
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    
+        /* Section Styles */
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            padding: 20px;
+        }
+    
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #007bff;
+        }
+    
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.25rem;
+        }
+    
+        .team-section, .mission-section {
+            margin-top: 40px;
+        }
+    
+        .team {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+    
+        .team-member {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+    
+        .team-member img {
+            width: 100%;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+    
+        .team-member h4 {
+            font-size: 1.5rem;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+    
+        .team-member p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+    
+        .mission-section {
+            background-color: #007bff;
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+        }
+    
+        .mission-section h2 {
+            font-size: 2rem;
+        }
+    
+        .mission-section p {
+            font-size: 1.25rem;
+            color: #f1f1f1;
+        }
+    
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .team {
+                flex-direction: column;
+                align-items: center;
+            }
+    
+            .team-member {
+                width: 80%;
+            }
+        }
+    </style>
+{% endblock body %}
