@@ -3,12 +3,15 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from home.models import *
 
 # Create your views here.
 
 def index(request):
+    categories = Category.objects.all()
     context = {
         'is_index': True,  # Flag for index page
+        'categories': categories
     }
     return render(request, "index.html", context)
 
@@ -19,7 +22,6 @@ def shop(request):
 def shoping_cart(request):
     return render(request, "shoping-cart.html")
 
-@login_required(login_url="login_user")
 def whishlist(request):
     return render(request, "whishlist.html")
 
@@ -41,7 +43,6 @@ def about(request):
 def contact(request):
     return render(request, "contact.html")
 
-@login_required(login_url="login_user")
 def checkout(request):
     return render(request, "checkout.html")
 
@@ -105,8 +106,9 @@ def logout_user(request):
         messages.success(request, "Logout Successfull !!!")
     return render(request, "login.html")
 
-@login_required(login_url="login_user")
 def profile(request):
+    if request.user.is_anonymous:
+        return redirect("login_user")
     return render(request, "profile.html")
 
 def help(request):

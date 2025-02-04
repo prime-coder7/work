@@ -1,0 +1,12 @@
+{%extends 'base.html'%}
+
+{%block title%}About{%endblock%}
+
+{%block body%}
+
+    {% if user.is_anonymous%}
+    <h1>Welcome Anonymous</h1>
+    {% else %}
+    <h1>Welcome {{ user.username }}</h1>
+    {% endif %}
+{%endblock%}
