@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
-
+ 
 * {
 	box-sizing: border-box;
 }
@@ -46,7 +46,7 @@ a {
 button {
 	border-radius: 20px;
 	border: 1px solid #1d1d1d;
-	background-color: #1d1d1d;
+	background-color: #f32d2d;
 	color: #FFFFFF;
 	font-size: 12px;
 	font-weight: bold;
@@ -172,9 +172,12 @@ input {
 }
 
 .overlay {
-	background: #232526;  
+	/* background: #262323;  
 	background: -webkit-linear-gradient(to left, #414345, #232526);
-	background: linear-gradient(to left, #414345, #232526);
+	background: linear-gradient(to left, #414345, #232526); */
+	background: #FF0000; /* Solid Red */
+	background: -webkit-linear-gradient(to right, #FF0000, #8B0000); /* Gradient from bright red to dark red for WebKit browsers */
+	background: linear-gradient(to right, #FF0000, #8B0000); /* Standard gradient from bright red to dark red */
 
 	/* background: #FF416C;
 	background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
@@ -252,7 +255,7 @@ input {
 	/* font-family: 'Montserrat', sans-serif; */
 	/* font-weight: bold; */
 	padding: 10px 20px;
-	background: #1d1d1d;  
+	background: #f32d2d;  
 	/* background: -webkit-linear-gradient(to left, #414345, #232526);
 	background: linear-gradient(to left, #414345, #232526); */
 
@@ -262,7 +265,7 @@ input {
 	transition: background-color 0.3s;
 }
 .btn:hover {
-	background-color: #000000;
+	background-color: red;
 }
 
 /* for password error shows */

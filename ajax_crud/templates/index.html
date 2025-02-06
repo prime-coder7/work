@@ -10,6 +10,7 @@
     <script>
         $(document).ready( function(){
             viewStudent()
+            $("#upbtn").hide()
         })
 
         function viewStudent() {
@@ -17,9 +18,11 @@
             $.get("viewStudent", {}, function(rt) {
 
                 for( var i in rt.allStudents) {
-                    row = row + "<tr><td>" + rt.allStudents[i].id + "</td><td>" + rt.allStudents[i].username + "</td><td>" + rt.allStudents[i].email + "</td><td>" + rt.allStudents[i].phone + "</td></tr>"  
+                    row = row + "<tr><td>" + rt.allStudents[i].id + "</td><td>" + rt.allStudents[i].username + "</td><td>" + rt.allStudents[i].email + "</td><td>" + rt.allStudents[i].phone + "</td><td> <button class='btn btn-primary' onclick='editStudent("+ rt.allStudents[i].id +")'>Edit</button>" + "</td><td> <button class='btn btn-danger' onclick='deleteStudent("+ rt.allStudents[i].id +")'>Delete</button>" + "</td></tr>"    
                 }
                 $('#tdata').html(row)
+
+                
             })
         }
 
@@ -37,8 +40,61 @@
                 $("#email").val("")
                 $("#phone").val("")
                 viewStudent()
+
+                $("#upbtn").hide()
             })
         }
+
+        function editStudent(uid){
+            $.get("/edit", {uid}, function(rt){
+                $("#id").val(rt.st[0].id)
+                $("#uname").val(rt.st[0].username)
+                $("#email").val(rt.st[0].email)
+                $("#phone").val(rt.st[0].phone)
+
+                viewStudent()
+
+                $("#smbtn").hide()
+                $("#upbtn").show()
+            })
+        }
+
+        function updateStudent(){
+
+            var id = $("#id").val()
+            var uname = $("#uname").val()
+            var email = $("#email").val()
+            var phone = $("#phone").val()
+
+            var csrfmiddlewaretoken  = document.getElementsByName("csrfmiddlewaretoken")[0].value
+
+            $.post("/updateStudent", {csrfmiddlewaretoken, id, uname, email, phone}, function(rt){
+                alert(rt)
+                $("#id").val("")
+                $("#uname").val("")
+                $("#email").val("")
+                $("#phone").val("")
+                viewStudent()
+
+                $("#smbtn").show()
+                $("#upbtn").hide()
+            })
+        }
+
+        function deleteStudent(uid){
+            $.get("/deleteStudent", {uid}, function(rt){
+                alert(rt)
+                $("#id").val("")
+                $("#uname").val("")
+                $("#email").val("")
+                $("#phone").val("")
+                viewStudent()
+                $("#smbtn").show()
+                $("#upbtn").hide()
+            })
+        }
+
+
     </script>
 
 </head>
@@ -49,7 +105,7 @@
                 <h2 align="center">User Registration</h2>
                 <hr>
                 {%csrf_token%}
-
+                <input type="hidden" name="id" id="id">
                 <div class="form-group">
                     <label for="uname">Username</label>
                     <input type="text" name="uname" id="uname" class="form-control">
@@ -62,7 +118,8 @@
                     <label for="uname">Phone</label>
                     <input type="text" name="phone" id="phone" class="form-control">
                 </div>
-                <button class="btn btn-success" onclick="addStudent()">Submit</button>
+                <button class="btn btn-success" id="smbtn" onclick="addStudent()">Submit</button>
+                <button class="btn btn-success" id="upbtn" onclick="updateStudent()">Update</button>
             </div>
             <div class="col-1">
 
@@ -77,6 +134,7 @@
                             <th>Username</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th colspan="2">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tdata">

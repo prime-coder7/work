@@ -10,15 +10,20 @@
     <script>
         $(document).ready(function(){
             viewStudent()
+            $("#upbtn").hide()
         })
 
         function viewStudent(){
-            row = "";
-            $.get("viewStudent", {}, function(rt){
-                for( var i in rt.allStudents){
-                    row = row + "<tr><td>" + rt.allStudents[i].id + "</td><td>" + rt.allStudents[i].username + "</td><td>" + rt.allStudents[i].email + "</td><td>" + rt.allStudents[i].phone + "</td></td>"
+            var row = "";
+            var count = 1;
+
+            $.get("/viewStudent", {}, function(rt){
+                for ( var i in rt.allStudents ){
+                    row = row + "<tr><td>" + count + "</td><td>" + rt.allStudents[i].username + "</td><td>" + rt.allStudents[i].email + "</td><td>" + rt.allStudents[i].phone + "</td><td>" + "<button class='btn btn-primary' onclick='editStudent("+ rt.allStudents[i].id +")'>Edit</button>" + "</td><td> <button class='btn btn-danger' onclick='deleteStudent("+ rt.allStudents[i].id +")'>Delete</button>" + "</td></tr>"
+                    count++;
                 }
                 $("#tdata").html(row)
+                $("#upbtn").hide()
             })
         }
 
@@ -29,15 +34,75 @@
 
             var csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value
 
-            $.post("addStudent", {csrfmiddlewaretoken, uname, email, phone}, function(rt){
+            $.post("/addStudent", {csrfmiddlewaretoken, uname, email, phone}, function(rt){
                 alert(rt)
                 $("#uname").val("")
                 $("#email").val("")
                 $("#phone").val("")
-
                 viewStudent()
+                $("#upbtn").hide()
             })
+        }
 
+        function editStudent(uid){
+            $.get("/edit", {uid}, function(rt){
+                $("#id").val(rt.st[0].id)
+                $("#uname").val(rt.st[0].username)
+                $("#email").val(rt.st[0].email)
+                $("#phone").val(rt.st[0].phone)
+
+                $("#smbtn").hide()
+                $("#upbtn").show()
+            })
+        }
+
+        function updateStudent(){
+            var id = $("#id").val()
+            var uname = $("#uname").val()
+            var email = $("#email").val()
+            var phone = $("#phone").val()
+
+            var csrfmiddlewaretoken = document.getElementsByName("csrfmiddlewaretoken")[0].value
+
+            $.post("/updateStudent", {csrfmiddlewaretoken, id, uname, email, phone}, function(rt){
+                alert(rt)
+                $("#id").val("")
+                $("#uname").val("")
+                $("#email").val("")
+                $("#phone").val("")
+                viewStudent()
+
+                $("#upbtn").hide()
+                $("#smbtn").show()
+            })
+        }
+
+        function deleteStudent(uid){
+            var id = $("#id").val()
+            $.get("/deleteStudent", {uid}, function(rt){
+                alert(rt)
+                viewStudent()
+                $("#id").val("")
+                $("#uname").val("")
+                $("#email").val("")
+                $("#phone").val("")
+                $("#smbtn").show()
+            })
+        }
+
+        function searchStudent(){
+            data = $("#search").val()
+            var row = "";
+            var count = 1;
+
+            $.get("/searchStudent", { data }, function(rt){
+                for ( var i in rt.result ){
+                    row = row + "<tr><td>" + count + "</td><td>" + rt.result[i].username + "</td><td>" + rt.result[i].email + "</td><td>" + rt.result[i].phone + "</td><td>" + "<button class='btn btn-primary' onclick='editStudent("+ rt.result[i].id +")'>Edit</button>" + "</td><td> <button class='btn btn-danger' onclick='deleteStudent("+ rt.result[i].id +")'>Delete</button>" + "</td></tr>"
+                    count++;
+                }
+                $("#tdata").html(row)
+                $("#upbtn").hide()
+            })
         }
     </script>
 
@@ -49,6 +114,7 @@
                 <h2 align="center">User Registration</h2>
                 <hr>
                 {% csrf_token %}
+                <input type="hidden" name="id" id="id">
                 <div class="form-group">
                     <label for="uname">Username</label>
                     <input type="text" name="uname" id="uname" class="form-control">
@@ -61,7 +127,8 @@
                     <label for="phone">Phone No.</label>
                     <input type="text" name="phone" id="phone" class="form-control">
                 </div>
-                <button type="submit" onclick="addStudent()" class="btn btn-success">Submit</button>
+                <button type="submit" id="smbtn" onclick="addStudent()" class="btn btn-success">Submit</button>
+                <button type="submit" id="upbtn" onclick="updateStudent()" class="btn btn-success">Update</button>
             </div>
             <div class="col-1">
 
@@ -69,13 +136,15 @@
             <div class="col-7 card mt-5 p-4">
                 <h2 align="center">User Details</h2>
                 <hr>
+                <input type="text" name="search" id="search" onkeyup="searchStudent()" placeholder="search..." class="form-control">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Sr. No.</th>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th colspan="2">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tdata">

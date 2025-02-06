@@ -1,0 +1,61 @@
+
+<!DOCTYPE htmL>
+<htmL>
+<head>
+    <meta charset="utf-8">
+    <meta name="vieport" content="width=device-width, initial-scale=1">
+    <title>formula 1 - Admin Dashboard page</title>
+    <link rel="stylesheet" type="text/css" href="../css/admin_style.css">
+    <!--font awesome  cdn link -->
+     <!--box icon cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+<body>
+
+      <div class="main-container">
+        <?php include '../components/admin_header.php';?>
+             <section class="post-editor">
+             <div class="heading">
+             <h1>add product</h1>
+             <img src="https://tse4.mm.bing.net/th?id=OIP.zgnLbe1w5yJKtr-_Nbf-hwHaHa&pid=Api&P=0&h=180">
+      </div> 
+         <div class="form-container">
+             <form action="" method="post" enctype="multipart/form-data" class="register">
+                <div class="input-field">
+                    <p>product name<span>*</span></p>
+                    <input type="text" name="name" maxlength="100" placeholder="add product name"
+                    required class="box" >
+                </div>
+                <div class="input-field">
+                    <p>product price<span>*</span></p>
+                    <input type="number" name="price" maxlength="100" placeholder="add product price"
+                    required class="box" >
+                </div>
+                <div class="input-field">
+                    <p>products details<span>*</span></p>
+                    <textarea name="description" required maxlength="1000" placeholder="add 
+                    products details" class="box"></textarea>
+                </div>
+                 <div class="input-field">
+                    <p>product stock<span>*</span></p>
+                    <input type="number" name="stock" maxlength="10"  min="0" max=" 999999999" 
+                    placeholder="add product stock" required class="box" >
+                </div>
+                <div class="input-field">
+                    <p>product image<span>*</span></p>
+                    <input type="file" name="image" accept="image/*" required class="box" >
+                </div>
+                <div class="flex-btn">
+                    <input type="submit" name="publish" value="add product" class="btn">
+                    <input type="submit" name="draft" value="save as draft" class="btn">
+                </div>
+              </form>
+         </div>
+        </section>
+      </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="../js/admin_script.js"></script>
+<?php include '../components/alert.php';?>
+</body>
+</html>
