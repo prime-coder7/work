@@ -1,4 +1,47 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+include '../components/connected.php'; // Include database connection
 
+// Check if the user is already logged in (using session)
+if (isset($_SESSION['seller_id'])) {
+    header('Location: dashboard.php');
+    exit();
+}
+
+if (isset($_POST['submit'])) {
+    // Sanitize inputs
+    $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_SANITIZE_EMAIL) : '';
+    $pass = isset($_POST['pass']) ? $_POST['pass'] : '';
+
+    // Check if user exists with the provided email
+    $select_seller = $conn->prepare("SELECT * FROM `sellers` WHERE email = ?");
+    $select_seller->execute([$email]);
+    $seller = $select_seller->fetch(PDO::FETCH_ASSOC);
+
+    if ($seller) {
+        // Use password_verify to check the entered password against the stored hashed password
+        if (password_verify($pass, $seller['password'])) {
+            // Password is correct, login successful
+            $_SESSION['seller_id'] = $seller['id'];  // Store seller ID in session
+
+            // Set cookie for persistence
+            setcookie('seller_id', $seller['id'], time() + (86400 * 30), "/");
+
+            // Redirect to dashboard
+            header('Location: dashboard.php');
+            exit();
+        } else {
+            // Invalid password
+            $warning_msg[] = 'Invalid email or password.';
+        }
+    } else {
+        // No user found with this email
+        $warning_msg[] = 'Invalid email or password.';
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +50,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formula 1 - Seller Login</title>
     <link rel="stylesheet" href="../css/admin_style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
     <div class="form-container">
@@ -34,7 +76,6 @@
         </form>
     </div>
 
-    <!-- Success/Warning Messages -->
     <?php if (isset($warning_msg) && !empty($warning_msg)) { ?>
         <script>
             <?php foreach ($warning_msg as $msg) { ?>
@@ -44,8 +85,5 @@
     <?php } ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-    <script src="../js/script.js"></script>
-
-    <?php include '../components/alert.php'; ?>
 </body>
 </html>

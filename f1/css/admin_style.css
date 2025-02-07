@@ -435,9 +435,10 @@ html{
     z-index: 101;
     top: 7%;
   }
-  .sidebar.active{
-    width: 300px;
-  }
+  .sidebar.active {
+    transform: translateX(0); /* Or use other animations for sliding the sidebar */
+    transition: transform 0.3s ease;
+}
   .sidebar .profile{
     margin-top: .5rem;
   }
