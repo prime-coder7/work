@@ -4,11 +4,13 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 include '../components/connected.php'; // Include database connection
 
-// Check if the user is already logged in (using session)
+// Check if the user is already logged in
 if (isset($_SESSION['seller_id'])) {
     header('Location: dashboard.php');
     exit();
 }
+
+$warning_msg = []; // Initialize warning messages array
 
 if (isset($_POST['submit'])) {
     // Sanitize inputs
@@ -21,15 +23,11 @@ if (isset($_POST['submit'])) {
     $seller = $select_seller->fetch(PDO::FETCH_ASSOC);
 
     if ($seller) {
-        // Use password_verify to check the entered password against the stored hashed password
+        // Use password_verify to check the entered password
         if (password_verify($pass, $seller['password'])) {
-            // Password is correct, login successful
-            $_SESSION['seller_id'] = $seller['id'];  // Store seller ID in session
-
-            // Set cookie for persistence
+            // Successful login
+            $_SESSION['seller_id'] = $seller['id'];
             setcookie('seller_id', $seller['id'], time() + (86400 * 30), "/");
-
-            // Redirect to dashboard
             header('Location: dashboard.php');
             exit();
         } else {
@@ -50,6 +48,7 @@ if (isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formula 1 - Seller Login</title>
     <link rel="stylesheet" href="../css/admin_style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 </head>
 <body>
     <div class="form-container">
@@ -76,14 +75,13 @@ if (isset($_POST['submit'])) {
         </form>
     </div>
 
-    <?php if (isset($warning_msg) && !empty($warning_msg)) { ?>
+    <?php if (!empty($warning_msg)) { ?>
         <script>
-            <?php foreach ($warning_msg as $msg) { ?>
-                swal("Warning!", "<?php echo $msg; ?>", "warning");
-            <?php } ?>
+            let messages = <?php echo json_encode($warning_msg); ?>;
+            messages.forEach(function(msg) {
+                swal("Warning!", msg, "warning");
+            });
         </script>
     <?php } ?>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 </body>
 </html>

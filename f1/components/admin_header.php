@@ -34,7 +34,7 @@ if (isset($_SESSION['seller_id'])) {
             <p><?= htmlspecialchars($fetch_profile['name']); ?></p>
             <div class="flex-btn">
                 <a href="profile.php" class="btn">Profile</a>
-                <a href="../components/admin_logout.php" onclick="return confirm('Logout from this website?');" class="btn">Logout</a>
+                <a href="../admin_pannel/logout.php" onclick="return confirm('Logout from this website?');" class="btn">Logout</a>
             </div>
         </div>
         <?php } ?>
@@ -62,8 +62,8 @@ if (isset($_SESSION['seller_id'])) {
                 <li><a href="dashboard.php"><i class="bx bxs-home-smile"></i>Dashboard</a></li>
                 <li><a href="add_product.php"><i class="bx bxs-shopping-bags"></i>Add Product</a></li>
                 <li><a href="view_product.php"><i class="bx bxs-food-menu"></i>View Product</a></li>
-                <li><a href="user_accounts.php"><i class="bx bxs-user-detail"></i>Account</a></li>
-                <li><a href="../components/admin_logout.php" onclick="return confirm('Logout from this website?');"><i class="bx bxs-log-out"></i>Logout</a></li>
+                <li><a href="profile.php"><i class="bx bxs-user-detail"></i>Account</a></li>
+                <li><a href="../admin_pannel/logout.php" onclick="return confirm('Logout from this website?');"><i class="bx bxs-log-out"></i>Logout</a></li>
             </ul>
         </div><br><br><br><center>
     <div class="social-links">

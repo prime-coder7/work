@@ -42,8 +42,8 @@ $deactive_products = $select_deactive_products->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
+            /* max-width: 1200px; */
+            margin: 0 0;
             padding: 20px;
         }
 
