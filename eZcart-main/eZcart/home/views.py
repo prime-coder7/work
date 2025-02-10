@@ -4,19 +4,61 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from home.models import *
+from django.http import JsonResponse
+from django.conf import settings
 
 # Create your views here.
 
 def index(request):
     categories = Category.objects.all()
+    products = Product.objects.all()
     context = {
         'is_index': True,  # Flag for index page
-        'categories': categories
+        'categories': categories,
+        'products': products,
     }
     return render(request, "index.html", context)
 
 def shop(request):
-    return render(request, "shop.html")
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    context = {
+        'categories': categories,
+        'products': products,
+    }
+    return render(request, "shop.html", context)
+
+def get_products_by_category(request):
+    cid = request.GET.get("cid")
+    if cid == "":
+        products = Product.objects.all()
+    else:
+        products = Product.objects.filter(category_id=cid)
+
+    product_list = [
+        {
+            'productName': product.productName,
+            'productPrice': product.productPrice,
+            'productImage': { 'url': product.productImage.url }
+        }
+        for product in products
+    ]
+    return JsonResponse({"cproducts": product_list})
+
+def searchProduct(request):
+    val = request.GET.get('val')
+
+    products = Product.objects.filter(productName__istartswith=val)
+
+    product_list = [
+        {
+            'productName': product.productName,
+            'productPrice': product.productPrice,
+            'productImage': { 'url': product.productImage.url }
+        }
+        for product in products
+    ]
+    return JsonResponse({"cproducts": product_list})
 
 @login_required(login_url="login_user")
 def shoping_cart(request):
@@ -125,3 +167,4 @@ def home2(request):
 
 def home3(request):
     return render(request, "home-03.html")
+

@@ -110,51 +110,60 @@
     <div class="container" id="container">
         <!-- Sign-up Form -->
         <div class="form-container sign-up-container">
-            <form id="signUpForm" action="#" method="POST">
+            <form id="signUpForm" action="{% url 'signup_user'%}" method="post" onsubmit="return validateSignUpForm()">
+                {% csrf_token %}
                 <h1>Create Account</h1>
                 <div class="social-container">
                     <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
                     <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                 </div>
+                <span>or use your email for registration</span>
                 <input type="text" id="signupusername" name="signupusername" placeholder="Username" required />
                 <input type="email" id="signupemail" name="signupemail" placeholder="Email" required />
-                <input type="password" id="signuppassword" name="signuppassword" placeholder="Password" required />
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required />
-                <button type="submit">Sign Up</button>
+                <input type="password" id="signuppassword" name="signuppassword" placeholder="Password" required minlength="4" />
+                <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" required />
+                <span id="passwordError" class="error"></span>
+                <button class="btn" type="submit">Sign Up</button>
             </form>
         </div>
-    
+
         <!-- Sign-in Form -->
         <div class="form-container sign-in-container">
-            <form id="signInForm" action="#" method="POST">
+            <form id="signInForm" action="{% url 'login_user'%}" method="post" onsubmit="return validateSignInForm()">
+                {% csrf_token %}
                 <h1>Sign In</h1>
                 <div class="social-container">
                     <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
                     <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                 </div>
-                <input type="text" id="loginusername" name="loginusername" placeholder="Username" required />
-                <input type="password" id="loginpassword" name="loginpassword" placeholder="Password" required />
-                <button type="submit">Sign In</button>
+                <span>or use your account</span>
+                <input type="username" id="loginusername" name="loginusername" placeholder="Username" required />
+                <input type="password" id="loginPassword" name="loginpassword" placeholder="Password" required minlength="4" />
+
+                <span id="passwordError" class="error"></span>
+                <a href="#">Forgot your password?</a>
+                <button class="btn" type="submit">Sign In</button>
             </form>
         </div>
-    
-        <!-- Overlay to toggle forms -->
-        <div class="overlay-container" id="overlayContainer">
-            <div class="overlay-panel overlay-left">
-                <h1>Welcome Back!</h1>
-                <p>To keep connected with us, please login with your personal info</p>
-                <button id="signInBtn">Sign In</button>
-            </div>
-            <div class="overlay-panel overlay-right">
-                <h1>Hello, Friend!</h1>
-                <p>Enter your personal details and start your journey with us</p>
-                <button id="signUpBtn">Sign Up</button>
+
+        <!-- Overlay for switching between sign-in and sign-up forms -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
             </div>
         </div>
     </div>
-    
 
     <br>
 

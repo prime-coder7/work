@@ -40,6 +40,8 @@ urlpatterns = [
     path('logout', views.logout_user, name="logout"),
     path('profile', views.profile, name="profile"),
     path('help', views.help, name="help"),
+    path('get_products_by_category', views.get_products_by_category, name="get_products_by_category"),
+    path('searchProduct', views.searchProduct, name="searchProduct"),
 ]
 
 if settings.DEBUG:
