@@ -1,0 +1,53 @@
+<!-- profile.html -->
+{% extends 'base.html' %}
+
+{% block title %}Profile | Digital Society{% endblock %}
+{% block style%}
+<script>
+    /* Profile Styling */
+form {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  textarea {
+    resize: none;
+  }
+  
+</script>
+{%endblock style%}
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Your Profile</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <textarea class="form-control" id="address" name="address" rows="3">{{ user.address }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone Number</label>
+      <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+  </form>
+</div>
+{% endblock %}

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w2d(499rgt34)0h85st2j6skrc$%r7pm$%e_)7ta$p$974!7r4'
+SECRET_KEY = 'django-insecure-@edofr9=0bvlk&wiph5h4oi^8ux1g66!prjwm=)a9eb0_5)-_*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -55,7 +55,7 @@ ROOT_URLCONF = 'Digital_Society.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [  BASE_DIR / "templates" ],
+        'DIRS': [  BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +118,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIDFILES_DIR = [ BASE_DIR/"static"]
+STATICFILES_DIR = [ BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -126,4 +126,5 @@ STATIDFILES_DIR = [ BASE_DIR/"static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = [ BASE_DIR / "static/images" ]
-MEDIA_URL = '/images/'
+
+MEDIA_URL = "/images/"
