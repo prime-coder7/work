@@ -41,14 +41,13 @@ urlpatterns = [
     path('help', views.help, name="help"),
     path('get_products_by_category', views.get_products_by_category, name="get_products_by_category"),
     path('searchProduct', views.searchProduct, name="searchProduct"),
-    path('profile', views.profile, name="profile"),
 
+    path('profile', views.profile, name="profile"),
     path('profile/', include([
         path('my_orders', views.my_orders, name="my_orders"),
         path('my_wishlist', views.my_wishlist, name="my_wishlist"),
         path('address_book', views.address_book, name="address_book"),
         path('acc_setting', views.acc_setting, name="acc_setting"),
-        path('change_password', views.change_password, name="change_password"),
     ])),
     
 ]

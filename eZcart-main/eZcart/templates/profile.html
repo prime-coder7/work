@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,202 +10,12 @@
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}" />
 
-  <!-- Custom Styles -->
-  <style>
-    body {
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-      transition: all 0.3s ease-in-out;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
-    }
-  
-    header {
-      background-color: #343a40;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      width: 100%; /* Ensure header spans full width */
-    }
-  
-    .logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #ff5733;
-      text-transform: uppercase;
-    }
-  
-    #sidebar {
-      width: 250px;
-      background: #212529;
-      color: white;
-      position: fixed;
-      top: 60px;
-      left: -250px;
-      bottom: 0;
-      transition: all 0.3s ease-in-out;
-      z-index: 999;
-      overflow-y: auto;
-      height: calc(100vh - 60px); /* Ensure sidebar takes full height minus header */
-    }
-  
-    #sidebar.active {
-      left: 0;
-    }
-  
-    #sidebar h2 {
-      text-align: start;
-      padding: 20px 20px 20px 40px;
-      background-color: #343a40;
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-  
-    #sidebar .nav-link {
-      color: white;
-      padding: 15px;
-      display: block;
-      transition: background-color 0.3s ease;
-    }
-  
-    #sidebar .nav-link:hover {
-      background-color: #495057;
-      border-radius: 5px;
-    }
-  
-    #content {
-      flex-grow: 1;
-      padding: 30px;
-      margin-left: 0;
-      transition: all 0.3s ease-in-out;
-      margin-top: 80px;
-    }
-  
-    #content.active {
-      margin-left: 250px;
-    }
-  
-    #toggle-btn {
-      background-color: #212529;
-      color: white;
-      border: none;
-      padding: 8px 13px;
-      cursor: pointer;
-      z-index: 1100;
-    }
-  
-    #toggle-btn:hover {
-      background-color: #495057;
-      border-radius: 5px;
-    }
-  
-    .user-options {
-      display: flex;
-      align-items: center;
-    }
-  
-    .user-options .btn {
-      color: white;
-      background-color: transparent;
-      border: none;
-      margin-left: 15px;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-  
-    .user-options .btn:hover {
-      background-color: #495057;
-      border-radius: 5px;
-    }
-  
-    footer {
-      background: #343a40;
-      color: white;
-      text-align: center;
-      padding: 15px 0;
-      position: relative;
-      width: 100%;
-    }
-  
-    /* Modal Styles */
-    .modal-header {
-      background: #343a40;
-      color: white;
-    }
-  
-    .modal-footer {
-      background: #f8f9fa;
-    }
-  
-    .modal-body {
-      font-size: 1rem;
-    }
-  
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-      #sidebar {
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        left: -100%;
-        top: 60px;
-        bottom: 0;
-      }
-  
-      #sidebar.active {
-        left: 0;
-      }
-  
-      #content {
-        margin-left: 0;
-        padding: 20px;
-        overflow-x: hidden; /* Prevent horizontal scrolling */
-        width: 100%;
-      }
-  
-      #toggle-btn {
-        font-size: 1.5rem;
-      }
-  
-      #sidebar .nav-link {
-        padding: 12px 20px;
-        font-size: 1.1rem;
-      }
-  
-      .user-options {
-        margin-left: auto;
-      }
-  
-      footer {
-        position: relative;
-      }
-  
-      .card-img-top {
-        width: 100%; /* Make profile image responsive */
-        height: auto;
-      }
-    }
-  
-    /* For larger screens (i.e., tablets or desktops) */
-    @media (min-width: 769px) {
-      #sidebar {
-        width: 250px;
-      }
-    }
-  </style>
-  
-  
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+
+
 </head>
 
 <body>
@@ -220,7 +31,7 @@
     <div class="logo">eZcart</div>
     <div class="user-options">
       <button class="btn" id="notifications-btn">
-        <i class="fas fa-bell"></i>
+        <i class="fa fa-bell"></i>
       </button>
       <a href="{% url 'index' %}" class="btn">
         <i class="fas fa-home"></i>
@@ -264,16 +75,39 @@
   <main id="content">
     <div class="container mt-4">
       <div class="row">
-        <div class="col-md-4">
-          <div class="card">
-            <img src="https://via.placeholder.com/150" class="card-img-top" alt="User Profile Image">
-            <div class="card-body">
-              <h5 class="card-title" id="profile-name">John Doe</h5>
-              <p class="card-text" id="profile-email">john.doe@example.com</p>
-              <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+        <div class="col-md-4 profile-col">
+          <div class="profile-card">
+            <div class="image">
+              <img src="images/product-min-01.jpg" alt="User Profile Image" class="profile-img">
             </div>
+        
+            <div class="text-data">
+              <span class="name" id="profile-name">{{ request.user.username }}</span>
+            </div>
+        
+            <div class="details">
+              <ul>
+                <li><i class="fas fa-envelope"></i> <span id="profile-email">{{ request.user.email }}</span></li>
+                <li><i class="fas fa-phone"></i> +1 555-555-5555</li>
+                <li><i class="fas fa-link"></i> www.support@ezcart.com</li>
+                <li><i class="fas fa-map"></i> 123 Main Street, Anytown, USA</li>
+              </ul>
+            </div>
+        
+            <div class="media-buttons">
+              <a href="#" style="background: #4267b2" class="link"><i class="fa fa-facebook"></i></a>
+              <a href="#" style="background: #1da1f2" class="link"><i class="fa fa-twitter"></i></a>
+              <a href="#" style="background: #e1306c" class="link"><i class="fa fa-instagram"></i></a>
+              <a href="#" style="background: #ff0000" class="link"><i class="fa fa-youtube"></i></a>
+            </div>
+        
+            <!-- Edit Profile Button -->
+            <button class="profile-btn" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
           </div>
         </div>
+        
+        
+        
 
         <div class="col-md-8">
           <div id="orders" class="content-section">
@@ -302,28 +136,33 @@
                 <button class="btn btn-danger btn-sm float-end" onclick="removeItemFromWishlist(this)">Remove</button>
               </li>
             </ul>
-            <button class="btn btn-success mt-3" onclick="addItemToWishlist()">Add New Item</button>
+            <button class="btn btn-success mt-3" onclick="addItemToWishlist()">Explore New Item</button>
           </div>
 
           <div id="address" class="content-section" style="display: none;">
             <h4>Address Book</h4>
             <ul class="list-group">
-              <li class="list-group-item">
-                <strong>Home Address</strong><br>
-                1234 Main St, Springfield, IL
-                <button class="btn btn-warning btn-sm float-end" onclick="editAddress(this)">Edit</button>
-                <button class="btn btn-danger btn-sm float-end mr-2" onclick="deleteAddress(this)">Delete</button>
-              </li>
+                <li class="list-group-item">
+                    <strong>Home Address</strong><br>
+                    1234 Main St, Springfield, IL
+                    <div class="btn-container">
+                        <button class="btn btn-warning btn-sm" onclick="editAddress(this)">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteAddress(this)">Delete</button>
+                    </div>
+                </li>
             </ul>
             <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add New Address</button>
-          </div>
+        </div>
+        
 
           <div id="settings" class="content-section" style="display: none;">
             <h4>Account Settings</h4>
             <ul class="list-group">
               <li class="list-group-item">
-                <button class="btn btn-outline-warning w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
-                <button class="btn btn-danger w-100 mt-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button>
+                <button class="btn btn-outline-warning w-100" data-bs-toggle="modal"
+                  data-bs-target="#changePasswordModal">Change Password</button>
+                <button class="btn btn-danger w-100 mt-2" data-bs-toggle="modal"
+                  data-bs-target="#deleteAccountModal">Delete Account</button>
               </li>
             </ul>
           </div>
@@ -349,23 +188,31 @@
 
   <!-- Modals -->
   <!-- Edit Profile Modal -->
-  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal fade" id="editProfileModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title">Edit Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
         </div>
         <div class="modal-body">
-          <form id="editProfileForm">
-            <div class="mb-3">
-              <label for="editName" class="form-label">Name</label>
-              <input type="text" class="form-control" id="editName" value="John Doe" required>
-            </div>
-            <div class="mb-3">
-              <label for="editEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="editEmail" value="john.doe@example.com" required>
-            </div>
+          <form>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-control" value="John Doe">
+            </div><br>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" value="johndoe@example.com">
+            </div><br>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="text" class="form-control" value="+1234567890">
+            </div><br>
+            <div class="form-group">
+              <label>Profile Image</label>
+              <input type="file" class="form-control-file">
+            </div><br>
             <button type="submit" class="btn btn-primary">Save Changes</button>
           </form>
         </div>
@@ -374,7 +221,8 @@
   </div>
 
   <!-- Delete Account Modal -->
-  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -393,20 +241,69 @@
   </div>
 
   <!-- Add Address Modal -->
-  <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal fade" id="addAddressModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+          <h5 class="modal-title">Add Address</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addAddressForm">
-            <div class="mb-3">
-              <label for="address" class="form-label">Address</label>
-              <input type="text" class="form-control" id="address" placeholder="Enter your address" required>
+          <form>
+            <div class="form-group">
+              <label>House No</label>
+              <input type="text" class="form-control">
             </div>
-            <button type="submit" class="btn btn-success">Add Address</button>
+            <div class="form-group">
+              <label>Street</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Zip Code</label>
+              <input type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Save Address</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Address Modal -->
+  <div class="modal fade" id="editAddressModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label>House No</label>
+              <input type="text" class="form-control" name="houseNo">
+            </div>
+            <div class="form-group">
+              <label>Street</label>
+              <input type="text" class="form-control" name="street">
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" class="form-control" name="city">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" class="form-control" name="state">
+            </div>
+            <button type="submit" class="btn btn-info">Update Address</button>
           </form>
         </div>
       </div>
@@ -414,7 +311,8 @@
   </div>
 
   <!-- Change Password Modal -->
-  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -424,14 +322,18 @@
         <div class="modal-body">
           <form id="changePasswordForm">
             <div class="mb-3">
+              <label for="currentPassword" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="currentPassword" required>
+            </div>
+            <div class="mb-3">
               <label for="newPassword" class="form-label">New Password</label>
               <input type="password" class="form-control" id="newPassword" required>
             </div>
             <div class="mb-3">
-              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <label for="confirmPassword" class="form-label">Confirm New Password</label>
               <input type="password" class="form-control" id="confirmPassword" required>
             </div>
-            <button type="submit" class="btn btn-warning">Change Password</button>
+            <button type="submit" class="btn btn-primary">Change Password</button>
           </form>
         </div>
       </div>
@@ -460,10 +362,69 @@
         });
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('content').classList.remove('active');
+        document.getElementById('notification').style.display = 'none'; // Optional: Close notification after link click
       });
     });
 
-    
+
+    const addItemToWishlist = () => {
+      window.location.href = "{% url 'index' %}";
+    }
+
+  </script>
+  <script>
+    setTimeout(() => {
+      document.getElementById('notification').style.display = 'none';
+    }, 5000); // Hide the notification after 5 seconds
+
+    function removeItemFromWishlist(button) {
+      button.parentElement.remove();
+    }
+
+    document.getElementById('changePasswordForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevent form submission
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        alert("Passwords do not match!");
+      } else {
+        // Proceed with password change logic
+      }
+    });
+
+    document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        document.querySelector('.card-img-top').src = event.target.result;
+      };
+      reader.readAsDataURL(this.files[0]);
+    });
+
+  </script>
+  <script>
+    // Open Edit Address Modal and pre-fill form
+    function editAddress(button) {
+      // Find the address details from the list item
+      const addressItem = button.closest('.list-group-item');
+      const addressText = addressItem.innerText;
+
+      // Split the address into different parts (assuming the format is simple)
+      const addressParts = addressText.split('\n');
+      const [houseNo, street, city, state] = addressParts;
+
+      // Populate modal fields with existing address data
+      document.querySelector('#editAddressModal input[name="houseNo"]').value = houseNo.replace('Home Address', '').trim();
+      document.querySelector('#editAddressModal input[name="street"]').value = street.trim();
+      document.querySelector('#editAddressModal input[name="city"]').value = city.trim();
+      document.querySelector('#editAddressModal input[name="state"]').value = state.trim();
+
+      // Show the modal
+      const editAddressModal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+      editAddressModal.show();
+    }
+
   </script>
 </body>
 

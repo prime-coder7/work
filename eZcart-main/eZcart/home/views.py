@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -7,7 +7,7 @@ from home.models import *
 from django.http import JsonResponse
 from django.conf import settings
 
-# Create your views here.
+# Create your views here. 
 
 def index(request):
     categories = Category.objects.all()
@@ -161,26 +161,22 @@ def my_orders(request):
     context = {
         # orders = Order.objects.filter(user=request.user).order_by('-created_at')
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'my_orders.html', context)
 
 def address_book(request):
     context = {
         # addresses = Address.objects.filter(user=request.user)
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'address_book.html', context)
 
 def acc_setting(request):
-    return render(request, "profile.html")
+    return render(request, "acc_setting.html")
 
 def my_wishlist(request):
     context = {
         # wishlist_items = Wishlist.objects.filter(user=request.user)
     } 
-    return render(request, 'profile.html', context)
-
-def change_password(request):
-    
-    return render(request, 'profile.html',)
+    return render(request, 'my_wishlist.html', context)
 
 
 
