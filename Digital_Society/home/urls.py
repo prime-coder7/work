@@ -16,6 +16,9 @@ urlpatterns = [
     path('society_watchmens', views.society_watchmens, name="society_watchmens"),
     path('notice', views.notice, name="notice"),
     path('events', views.events, name="events"),
+    
+    
+    
 ]
 
 

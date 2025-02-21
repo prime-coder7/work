@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-  <!-- Custom Styles (Blank for now) -->
+  <!-- Custom Styles -->
   <style>
     body {
       display: flex;
@@ -99,7 +99,7 @@
       z-index: 1100;
     }
 
-    /* User Profile/Notification Dropdown */
+    /* User Profile/Notification Section */
     .user-options {
       display: flex;
       align-items: center;
@@ -110,13 +110,68 @@
       background-color: transparent;
       border: none;
       margin-left: 15px;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       cursor: pointer;
     }
 
     .user-options .btn:hover {
       background-color: #495057;
       border-radius: 5px;
+    }
+
+    /* Notification Dropdown */
+    .notification-dropdown {
+      position: absolute;
+      right: 20px;
+      top: 60px;
+      background-color: #fff;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      display: none;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1050;
+    }
+
+    .notification-dropdown ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .notification-dropdown ul li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #f1f1f1;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .notification-dropdown ul li:hover {
+      background-color: #f1f1f1;
+    }
+
+    .notification-dropdown ul li.read {
+      background-color: #e9ecef;
+    }
+
+    .notification-dropdown .notification-text {
+      flex-grow: 1;
+    }
+
+    .notification-dropdown .delete-btn {
+      color: #dc3545;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .notification-dropdown .delete-btn:hover {
+      color: #c82333;
     }
 
     /* Footer */
@@ -131,7 +186,7 @@
     }
   </style>
 
-  {% block style %} <!-- Custom Styles for this page -->
+  {% block style %}
   {% endblock %}
 </head>
 <body>
@@ -160,53 +215,68 @@
     </div>
   </header>
   
-    <!-- Sidebar -->
-    <nav id="sidebar" class="d-flex flex-column">
-      <h2 class="text-light border-bottom">Digital Society</h2>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'index' %}">
-            <i class="fas fa-home"></i> Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'profile' %}">
-            <i class="fas fa-user"></i> Profile
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'society_members' %}">
-            <i class="fas fa-users"></i> Society Members
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'society_watchmens' %}">
-            <i class="fas fa-shield-alt"></i> Society Watchmen
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'notice' %}">
-            <i class="fas fa-bell"></i> Notices
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'events' %}">
-            <i class="fas fa-calendar-alt"></i> Events
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-danger" href="{% url 'logout' %}" id="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Logout
-          </a>
-        </li>
-      </ul>
-    </nav>
+  <!-- Sidebar -->
+  <nav id="sidebar" class="d-flex flex-column">
+    <h2 class="text-light border-bottom">Digital Society</h2>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'index' %}">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'profile' %}">
+          <i class="fas fa-user"></i> Profile
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'society_members' %}">
+          <i class="fas fa-users"></i> Society Members
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'society_watchmens' %}">
+          <i class="fas fa-shield-alt"></i> Society Watchmen
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'notice' %}">
+          <i class="fas fa-bell"></i> Notices
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'events' %}">
+          <i class="fas fa-calendar-alt"></i> Events
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-danger" href="{% url 'logout' %}" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
 
   <!-- Main Content -->
   <main id="content">
     {% block content %}
     {% endblock %}
   </main>
+
+  <!-- Notification Dropdown -->
+  <div class="notification-dropdown" id="notification-dropdown">
+    <ul id="notification-list">
+      <!-- Sample notifications, you can dynamically load these -->
+      <li class="notification-item">
+        <span class="notification-text">New user registered</span>
+        <button class="delete-btn" onclick="deleteNotification(this)">X</button>
+      </li>
+      <li class="notification-item read">
+        <span class="notification-text">Notice posted for upcoming event</span>
+        <button class="delete-btn" onclick="deleteNotification(this)">X</button>
+      </li>
+    </ul>
+  </div>
 
   <!-- Footer -->
   <footer>
@@ -216,7 +286,7 @@
   <!-- Bootstrap & JavaScript Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  {% block js %} <!-- Custom JavaScript for this page -->
+  {% block js %}
   <script>
     // Sidebar Toggle Script
     document.getElementById('toggle-btn').addEventListener('click', function () {
@@ -224,10 +294,24 @@
       document.getElementById('content').classList.toggle('active');
     });
 
-    // Example functionality for the buttons (expand as per requirements)
+    // Notifications Button Toggle Script
     document.getElementById('notifications-btn').addEventListener('click', function () {
-      alert('Notifications functionality can be added here.');
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      notificationDropdown.style.display = (notificationDropdown.style.display === 'none' || notificationDropdown.style.display === '') 
+        ? 'block' 
+        : 'none';
     });
+
+    // Delete Notification
+    function deleteNotification(button) {
+      const notificationItem = button.closest('li');
+      notificationItem.remove();
+    }
+
+    // Mark Notification as Read/Unread
+    function toggleReadStatus(notificationItem) {
+      notificationItem.classList.toggle('read');
+    }
   </script>
   {% endblock %}
 

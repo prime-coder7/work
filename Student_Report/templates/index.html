@@ -122,15 +122,15 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>
-                            <a href="{% url 'marks' student.s_id.student_id %}" class="student-link">
-                                {{ student.s_id.student_id }}
+                            <a href="{% url 'marks' student.student_id.student_id %}" class="student-link">
+                                {{ student.student_id.student_id }}
                             </a>
                         </td>
-                        <td>{{ student.firstname }}</td>
-                        <td>{{ student.lastname }}</td>
+                        <td>{{ student.firstName }}</td>
+                        <td>{{ student.lastName }}</td>
                         <td>{{ student.age }}</td>
                         <td>{{ student.email }}</td>
-                        <td>{{ student.dept.dept_name }}</td>
+                        <td>{{ student.dept.deptName }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

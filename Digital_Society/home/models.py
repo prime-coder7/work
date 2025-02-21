@@ -82,9 +82,9 @@ class Visitor(models.Model):
 class Watchmen(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    contact_number = models.CharField(max_length=15)
-    shift_timings = models.CharField(max_length=100)  # e.g., "9 AM - 5 PM"
-    assigned_area = models.CharField(max_length=200)
+    phone_number = models.CharField(max_length=15)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+

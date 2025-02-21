@@ -73,13 +73,13 @@
             <h3 class="text-center mb-4">Student Details</h3>
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Name:</strong> {{ student.firstname }} {{ student.lastname }}</p>
+                    <p><strong>Name:</strong> {{ student.firstName }} {{ student.lastName }}</p>
                     <p><strong>Age:</strong> {{ student.age }}</p>
                     <p><strong>Email:</strong> {{ student.email }}</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Student ID:</strong> {{ student.s_id.student_id }}</p>
-                    <p><strong>Department:</strong> {{ student.dept.dept_name }}</p>
+                    <p><strong>Student ID:</strong> {{ student.student_id.student_id }}</p>
+                    <p><strong>Department:</strong> {{ student.dept.deptName }}</p>
                 </div>
             </div>
         </div>
@@ -100,10 +100,19 @@
                         {% for marks in studentMarks %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ marks.subject.subject_name }}</td>
+                            <td>{{ marks.subject.subjectName }}</td>
                             <td>{{ marks.marks }}</td>
                         </tr>
                         {% endfor %}
+                        <tr>
+                            <th colspan="2">Total</th>
+                            <th>{{total.total}}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Rank In Class</th>
+                            <th>{{rank_num}}</th>
+    
+                        </tr>
                     </tbody>
                 </table>
             </div>
