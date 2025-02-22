@@ -1,0 +1,39 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+    <!-- Add your CSS files here -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'pass_change_done' %}">Change Password</a></li>
+                <!-- Add more navigation links as needed -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+        {% block content %}
+        <!-- This is where the content from other templates will be injected -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 My Website. All rights reserved.</p>
+    </footer>
+
+    <!-- Add your JavaScript files here -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

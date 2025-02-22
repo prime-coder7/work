@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en"> 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}User Dashboard - Digital Society{% endblock %}</title>
+  <title>{% block title %}User Profile - eZcart{% endblock %}</title>
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -119,6 +119,61 @@
       border-radius: 5px;
     }
 
+    /* Notification Dropdown */
+    .notification-dropdown {
+      position: absolute;
+      right: 20px;
+      top: 60px;
+      background-color: #fff;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      display: none;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1050;
+    }
+
+    .notification-dropdown ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .notification-dropdown ul li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #f1f1f1;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .notification-dropdown ul li:hover {
+      background-color: #f1f1f1;
+    }
+
+    .notification-dropdown ul li.read {
+      background-color: #e9ecef;
+    }
+
+    .notification-dropdown .notification-text {
+      flex-grow: 1;
+    }
+
+    .notification-dropdown .delete-btn {
+      color: #dc3545;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .notification-dropdown .delete-btn:hover {
+      color: #c82333;
+    }
+
     /* Footer */
     footer {
       background: #343a40;
@@ -129,10 +184,10 @@
       bottom: 0;
       width: 100%;
     }
-
   </style>
 
-  {% block style %}{% endblock %}
+  {% block style %}
+  {% endblock %}
 </head>
 <body>
 
@@ -154,7 +209,7 @@
       </button>
 
       <!-- Logout Button (Home button now) -->
-      <a href="{% url 'index' %}" class="btn">
+      <a href="{% url 'admin_dashboard' %}" class="btn">
         <i class="fas fa-home"></i> 
       </a>
     </div>
@@ -165,32 +220,33 @@
     <h2 class="text-light border-bottom">Digital Society</h2>
     <ul class="nav flex-column">
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'index' %}">
-          <i class="fas fa-tachometer-alt"></i> Dashboard
+        <a class="nav-link" href="{% url 'admin_dashboard' %}">
+          <i class="fas fa-home"></i> Dashboard
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'user_profile' %}">
+        <a class="nav-link" href="{% url 'admin_profile' %}">
           <i class="fas fa-user"></i> Profile
         </a>
       </li>
+      
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'user_events' %}">
-          <i class="fas fa-calendar-alt"></i> My Events
+        <a class="nav-link" href="{% url 'manage_events' %}">
+          <i class="fas fa-calendar-alt"></i> Events
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'user_notices' %}">
+        <a class="nav-link" href="{% url 'manage_notice' %}">
           <i class="fas fa-bell"></i> Notices
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'user_members' %}">
+        <a class="nav-link" href="{% url 'manage_members' %}">
           <i class="fas fa-users"></i> Society Members
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'user_watchmen' %}">
+        <a class="nav-link" href="{% url 'manage_watchmens' %}">
           <i class="fas fa-shield-alt"></i> Watchmen
         </a>
       </li>
@@ -207,6 +263,21 @@
     {% block content %}
     {% endblock %}
   </main>
+
+  <!-- Notification Dropdown -->
+  <div class="notification-dropdown" id="notification-dropdown">
+    <ul id="notification-list">
+      <!-- Sample notifications, you can dynamically load these -->
+      <li class="notification-item">
+        <span class="notification-text">New user registered</span>
+        <button class="delete-btn" onclick="deleteNotification(this)">X</button>
+      </li>
+      <li class="notification-item read">
+        <span class="notification-text">Notice posted for upcoming event</span>
+        <button class="delete-btn" onclick="deleteNotification(this)">X</button>
+      </li>
+    </ul>
+  </div>
 
   <!-- Footer -->
   <footer>
@@ -226,8 +297,22 @@
 
     // Notifications Button Toggle Script
     document.getElementById('notifications-btn').addEventListener('click', function () {
-      alert('Notifications clicked!');
+      const notificationDropdown = document.getElementById('notification-dropdown');
+      notificationDropdown.style.display = (notificationDropdown.style.display === 'none' || notificationDropdown.style.display === '') 
+        ? 'block' 
+        : 'none';
     });
+
+    // Delete Notification
+    function deleteNotification(button) {
+      const notificationItem = button.closest('li');
+      notificationItem.remove();
+    }
+
+    // Mark Notification as Read/Unread
+    function toggleReadStatus(notificationItem) {
+      notificationItem.classList.toggle('read');
+    }
   </script>
   {% endblock %}
 
