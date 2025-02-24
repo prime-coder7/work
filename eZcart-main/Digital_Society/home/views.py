@@ -47,42 +47,6 @@ def index(request):
         'notices': notices,
     })
 
-
-def login_user(request):
-    if request.user.is_authenticated:
-        # If the user is already authenticated, check their role
-        return redirect_based_on_role(request.user)  # Pass request.user instead of request
-
-    if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        if not username or not password:
-            messages.error(request, "Enter All Details")
-            return redirect("login_user")
-        else:
-            user = authenticate(username=username, password=password)
-
-            if user:
-                login(request, user)
-                # After login, check the role of the user
-                return redirect_based_on_role(user)  # Pass user instead of request
-            else:
-                messages.error(request, "Invalid Username or Password")
-                return redirect("login_user")
-    
-    return render(request, "login.html")
-
-def redirect_based_on_role(user):
-    if user.is_authenticated:
-        if user.role == 'admin':  # Check if the user is an admin
-            return redirect('admin_dashboard')  # Redirect to the admin dashboard
-        else:
-            return redirect('index')  # Redirect to the user index page
-    else:
-        return redirect('login_user')  # If the user is not authenticated, redirect to the login page
-
-
 def signup_user(request):
     if request.user.is_authenticated:
         return redirect("index")
@@ -112,6 +76,42 @@ def signup_user(request):
                 messages.error(request, "Please Enter Same Password")
                 return render(request, "signup.html") 
     return render(request, "signup.html")
+
+
+def login_user(request):
+    if request.user.is_authenticated:
+        return redirect_based_on_role(request)  # Pass the entire request object
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            messages.error(request, "Enter All Details")
+            return redirect("login_user")
+        else:
+            user = authenticate(username=username, password=password)
+
+            if user:
+                login(request, user)
+                return redirect_based_on_role(request)  # Pass the entire request object after login
+            else:
+                messages.error(request, "Invalid Username or Password")
+                return redirect("login_user")
+    
+    return render(request, "login.html")
+
+
+
+def redirect_based_on_role(request):
+    if request.user.is_authenticated:
+        if request.user.role == 'admin':
+            return redirect('admin_dashboard')  # Redirect to admin dashboard if user is admin
+        else:
+            return redirect('index')  # Redirect to user index page if user is not an admin
+    else:
+        return redirect('login_user')  # Redirect to login page if user is not authenticated
+
 
 @login_required(login_url="login_user")
 def logout_user(request):

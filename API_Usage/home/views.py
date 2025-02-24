@@ -8,7 +8,7 @@ def send_email(request):
         context = {}
 
     # if request.method == 'POST':
-        address = "imurfriend987@gmail.com"
+        address = "@gmail.com"
         subject = "Test"
         message = "Testing..."
         
