@@ -1,0 +1,80 @@
+-> MySQL queries:
+
+
+-- Creating 'users' table
+CREATE TABLE `users` (
+  `id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `address` TEXT,
+  `phone` VARCHAR(15),
+  `password` VARCHAR(255) NOT NULL,
+  `image` VARCHAR(255) DEFAULT NULL,
+  `role` VARCHAR(50) NOT NULL DEFAULT 'user',
+  PRIMARY KEY (`id`)
+);
+
+-- Creating unique index on 'id' column
+CREATE UNIQUE INDEX `users_id_index` ON `users` (`id`);
+
+-- Creating 'sellers' table
+CREATE TABLE `sellers` (
+  `id` VARCHAR(255) PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL UNIQUE,
+  `address` TEXT,
+  `phone` VARCHAR(15),
+  `password` VARCHAR(255) NOT NULL,
+  `image` VARCHAR(255) DEFAULT NULL,
+  `role` VARCHAR(50) NOT NULL DEFAULT 'seller'
+);
+
+-- Creating unique indexes on 'email' and 'id' columns
+CREATE UNIQUE INDEX `sellers_email_index` ON `sellers` (`email`);
+CREATE UNIQUE INDEX `sellers_id_index` ON `sellers` (`id`);
+
+-- Creating 'products' table
+CREATE TABLE `products` (
+  `id` VARCHAR(255) PRIMARY KEY,
+  `seller_id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `image` VARCHAR(255),
+  `stock` INT NOT NULL CHECK(`stock` >= 0),
+  `product_details` TEXT,
+  `description` TEXT,
+  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`)
+);
+
+-- Creating unique index on 'id' column
+CREATE UNIQUE INDEX `products_id_index` ON `products` (`id`);
+
+-- Creating 'orders' table
+CREATE TABLE `orders` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` VARCHAR(255) NOT NULL,
+  `seller_id` VARCHAR(255) NOT NULL,
+  `product_name` VARCHAR(255) NOT NULL,
+  `status` ENUM('pending', 'shipped', 'delivered', 'canceled') NOT NULL DEFAULT 'pending',
+  `total_price` DECIMAL(10, 2) NOT NULL,
+  `order_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `customer_name` VARCHAR(255) NOT NULL,
+  `customer_address` TEXT NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`) ON DELETE CASCADE
+);
+
+-- Creating 'message' table
+CREATE TABLE `message` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `sender_id` VARCHAR(255) NOT NULL,
+  `receiver_id` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `status` ENUM('unread', 'read') NOT NULL DEFAULT 'unread',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `reply_to` INT,
+  FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`receiver_id`) REFERENCES `sellers` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`reply_to`) REFERENCES `message` (`id`) ON DELETE CASCADE
+);

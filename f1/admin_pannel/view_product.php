@@ -16,9 +16,9 @@ $select_active_products->execute([$seller_id]);
 $active_products = $select_active_products->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch deactivated products for this seller
-$select_deactive_products = $conn->prepare("SELECT * FROM `products` WHERE seller_id = ? AND status = 'deactive'");
-$select_deactive_products->execute([$seller_id]);
-$deactive_products = $select_deactive_products->fetchAll(PDO::FETCH_ASSOC);
+$select_inactive_products = $conn->prepare("SELECT * FROM `products` WHERE seller_id = ? AND status = 'inactive'");
+$select_inactive_products->execute([$seller_id]);
+$inactive_products = $select_inactive_products->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <?php if (isset($_GET['msg'])): ?>
@@ -153,8 +153,8 @@ $deactive_products = $select_deactive_products->fetchAll(PDO::FETCH_ASSOC);
                             <p><?= htmlspecialchars($product['description'] ?? 'No description available'); ?></p>
                             <p>Price: $<?= htmlspecialchars($product['price'] ?? 0); ?></p>
                             <p>Status: <?= htmlspecialchars($product['status'] ?? 'Not Available'); ?></p>
-                            <a href="update_product.php?id=<?= urlencode($product['id']); ?>" class="btn">Update</a>
-                            <a href="change_status.php?id=<?= urlencode($product['id']); ?>&status=deactive" class="btn" onclick="return confirm('Are you sure you want to deactivate this product?');">Deactivate</a>
+                            <a href="update_product.php?product_id=<?= urlencode($product['id']); ?>" class="btn">Update</a>
+                            <a href="change_status.php?id=<?= urlencode($product['id']); ?>&status=inactive" class="btn" onclick="return confirm('Are you sure you want to deactivate this product?');">Deactivate</a>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -166,15 +166,15 @@ $deactive_products = $select_deactive_products->fetchAll(PDO::FETCH_ASSOC);
                 <h1>Deactivated Products</h1>
             </div>
             <div class="product-container">
-                <?php if (count($deactive_products) > 0): ?>
-                    <?php foreach ($deactive_products as $product): ?>
+                <?php if (count($inactive_products) > 0): ?>
+                    <?php foreach ($inactive_products as $product): ?>
                         <div class="product-box">
                             <img src="../uploaded_files/<?= !empty($product['image']) ? htmlspecialchars($product['image']) : 'default_image.jpg'; ?>" alt="<?= htmlspecialchars($product['name'] ?? 'Product'); ?>" />
                             <h3><?= htmlspecialchars($product['name'] ?? 'Unknown Product'); ?></h3>
                             <p><?= htmlspecialchars($product['description'] ?? 'No description available'); ?></p>
                             <p>Price: $<?= htmlspecialchars($product['price'] ?? 0); ?></p>
                             <p>Status: <?= htmlspecialchars($product['status'] ?? 'Not Available'); ?></p>
-                            <a href="update_product.php?id=<?= urlencode($product['id']); ?>" class="btn">Update</a>
+                            <a href="update_product.php?product_id=<?= urlencode($product['id']); ?>" class="btn">Update</a>
                             <a href="change_status.php?id=<?= urlencode($product['id']); ?>&status=active" class="btn" onclick="return confirm('Are you sure you want to activate this product?');">Activate</a>
                         </div>
                     <?php endforeach; ?>

@@ -74,7 +74,7 @@ if (isset($_POST['publish'])) {
 }
 
 if (isset($_POST['draft'])) {
-    $message = add_product('deactive', $conn, $_SESSION['seller_id']);
+    $message = add_product('inactive', $conn, $_SESSION['seller_id']);
     if ($message === 'Product inserted successfully') {
         header('Location: dashboard.php?msg=Product+saved+as+draft'); // Redirect after success
         exit();

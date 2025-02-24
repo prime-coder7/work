@@ -8,7 +8,18 @@ include '../components/connected.php'; // Include database connection
 
 // Check if the seller is logged in using the session
 if (!isset($_SESSION['seller_id'])) {
-    header('Location: login.php');
+    header('Location: ../components/login.php');
+    exit();
+}
+
+
+
+$select_seller = $conn->prepare("SELECT * FROM sellers WHERE id = ?");
+$select_seller->execute([$_SESSION['seller_id']]);
+$seller = $select_seller->fetch(PDO::FETCH_ASSOC);
+
+if ($seller['role'] != 'seller') {
+    header('Location: ../user_pannel/product_list.php');
     exit();
 }
 
@@ -18,11 +29,6 @@ $seller_id = $_SESSION['seller_id']; // Get the logged-in seller's ID
 $select_profile = $conn->prepare("SELECT * FROM `sellers` WHERE id = ?");
 $select_profile->execute([$seller_id]);
 $fetch_profile = $select_profile->fetch(PDO::FETCH_ASSOC);
-
-// Get product count
-$select_products = $conn->prepare("SELECT * FROM `products` WHERE seller_id = ?");
-$select_products->execute([$seller_id]);
-$number_of_products = $select_products->rowCount();
 
 // Get order count
 $select_orders = $conn->prepare("SELECT * FROM `orders` WHERE seller_id = ?");
@@ -46,6 +52,14 @@ $number_of_orders = $select_orders->rowCount();
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .profile-box img {
+            width: 150px; /* Adjust the size as needed */
+            height: 150px; /* Maintain square aspect ratio */
+            border-radius: 50%; /* This makes the image circular */
+            object-fit: cover; /* Ensures the image fits inside the circle */
+            margin-bottom: 20px; /* Adds some space below the image */
+        }
+
         .profile-box h2 {
             color: #721c24; /* Dark red for text */
         }
@@ -80,39 +94,47 @@ $number_of_orders = $select_orders->rowCount();
             <!-- Profile Info Box with Red Theme -->
             <div class="box profile-box">
                 <?php
-                // Handle image path check
-                $profile_image = $fetch_profile['profile_image'] ?? 'default.jpg';
-                $image_path = "../uploaded_files/" . $profile_image;
+                // Check if image exists in database
+                $image_file = !empty($fetch_profile['image']) ? $fetch_profile['image'] : 'default_image.jpg';
+                $image_path = "../uploaded_files/" . $image_file;
 
-                // Check if the file exists
+                // Check if file exists on server
                 if (!file_exists($image_path)) {
-                    $profile_image = 'default.jpg'; // Fallback to default image if not found
+                    $image_path = "../uploaded_files/default_image.jpg"; // Use default image if not found
                 }
                 ?>
 
-                <img src="../uploaded_files/<?= $seller['image'] ?: 'default_image.jpg'; ?>" alt="Profile Image">
+                <img src="<?= htmlspecialchars($image_path); ?>" alt="Profile Image">
                 <h2>Welcome, <?= htmlspecialchars($fetch_profile['name'] ?? 'Unknown'); ?>!</h2>
                 <p><strong>Email:</strong> <?= htmlspecialchars($fetch_profile['email'] ?? 'Not Provided'); ?></p>
                 <p><strong>Phone:</strong> <?= htmlspecialchars($fetch_profile['phone'] ?? 'Not Provided'); ?></p>
-                <p><strong>Location:</strong> <?= htmlspecialchars($fetch_profile['location'] ?? 'Not Provided'); ?></p>
-                <a href="user_accounts.php" class="btn">Update Profile</a>
+                <p><strong>Location:</strong> <?= htmlspecialchars($fetch_profile['address'] ?? 'Not Provided'); ?></p>
+                <a href="../components/profile.php" class="btn">Update Profile</a>
             </div>
 
             <!-- Unread Messages -->
             <div class="box">
                 <?php
-                $select_message = $conn->prepare("SELECT * FROM `message`");
-                $select_message->execute();
-                $number_of_msg = $select_message->rowCount();
+                $select_msg = $conn->prepare("SELECT COUNT(*) AS total_messages From `message` WHERE receiver_id = ?");
+                $select_msg->execute([$seller_id]);
+                $fetch_msg = $select_msg->fetch(PDO::FETCH_ASSOC);
+                $number_of_msg = $fetch_msg['total_messages'] ?? 0;
                 ?>
-                <h3><?= $number_of_msg; ?></h3>
+                <h3><?= htmlspecialchars($number_of_msg); ?></h3>
                 <p>Unread Messages</p>
                 <a href="admin_message.php" class="btn">See Messages</a>
             </div>
 
             <!-- Products Added -->
             <div class="box">
-                <h3><?= $number_of_products; ?></h3>
+                <?php
+                    // Get total product count
+                    $select_products = $conn->prepare("SELECT COUNT(*) AS total_products FROM `products` WHERE seller_id = ?");
+                    $select_products->execute([$seller_id]);
+                    $fetch_products = $select_products->fetch(PDO::FETCH_ASSOC);
+                    $number_of_products = $fetch_products['total_products'] ?? 0;
+                ?>
+                <h3><?= htmlspecialchars($number_of_products); ?></h3>
                 <p>Products Added</p>
                 <a href="add_product.php" class="btn">Add Product</a>
             </div>
@@ -120,12 +142,13 @@ $number_of_orders = $select_orders->rowCount();
             <!-- Active Products -->
             <div class="box">
                 <?php
-                // Fetch active products count for the seller
-                $select_active_products = $conn->prepare("SELECT * FROM `products` WHERE seller_id = ? AND status = 'active'");
-                $select_active_products->execute([$seller_id]);
-                $number_of_active_products = $select_active_products->rowCount();
+                    // Get active product count
+                    $select_active_products = $conn->prepare("SELECT COUNT(*) AS total_active FROM `products` WHERE seller_id = ? AND status = 'active'");
+                    $select_active_products->execute([$seller_id]);
+                    $fetch_active_products = $select_active_products->fetch(PDO::FETCH_ASSOC);
+                    $number_of_active_products = $fetch_active_products['total_active'] ?? 0;
                 ?>
-                <h3><?= $number_of_active_products; ?></h3>
+                <h3><?= htmlspecialchars($number_of_active_products); ?></h3>
                 <p>Active Products</p>
                 <a href="view_product.php" class="btn">View Active Products</a>
             </div>
@@ -133,11 +156,13 @@ $number_of_orders = $select_orders->rowCount();
             <!-- Deactive Products -->
             <div class="box">
                 <?php
-                $select_deactive_products = $conn->prepare("SELECT * FROM `products` WHERE seller_id = ? AND status = 'deactive'");
-                $select_deactive_products->execute([$seller_id]);
-                $number_of_deactive_products = $select_deactive_products->rowCount();
+                    // Get inactive product count
+                    $select_deactive_products = $conn->prepare("SELECT COUNT(*) AS total_inactive FROM `products` WHERE seller_id = ? AND status = 'inactive'");
+                    $select_deactive_products->execute([$seller_id]);
+                    $fetch_deactive_products = $select_deactive_products->fetch(PDO::FETCH_ASSOC);
+                    $number_of_deactive_products = $fetch_deactive_products['total_inactive'] ?? 0;
                 ?>
-                <h3><?= $number_of_deactive_products; ?></h3>
+                <h3><?= htmlspecialchars($number_of_deactive_products); ?></h3>
                 <p>Deactive Products</p>
                 <a href="view_product.php" class="btn">View Deactive Products</a>
             </div>
@@ -145,25 +170,28 @@ $number_of_orders = $select_orders->rowCount();
             <!-- Users Account -->
             <div class="box">
                 <?php
-                $select_users = $conn->prepare("SELECT * FROM `users`");
-                $select_users->execute();
-                $number_of_users = $select_users->rowCount();
+                    $select_users = $conn->prepare("SELECT COUNT(*) AS total_users FROM `users`");
+                    $select_users->execute();
+                    $fetch_users = $select_users->fetch(PDO::FETCH_ASSOC);
+                    $number_of_users = $fetch_users['total_users'] ?? 0;
                 ?>
-                <h3><?= $number_of_users; ?></h3>
+                <h3><?= htmlspecialchars($number_of_users); ?></h3>
                 <p>Users Accounts</p>
-                <a href="user_accounts.php" class="btn">View Users</a>
+                <a href="../components/users.php" class="btn">View Users</a>
             </div>
-
+            
             <!-- Sellers Account -->
             <div class="box">
                 <?php
-                $select_sellers = $conn->prepare("SELECT * FROM `sellers`");
-                $select_sellers->execute();
-                $number_of_sellers = $select_sellers->rowCount();
+                    // Fetch Sellers Count
+                    $select_sellers = $conn->prepare("SELECT COUNT(*) AS total_sellers FROM `sellers`");
+                    $select_sellers->execute();
+                    $fetch_sellers = $select_sellers->fetch(PDO::FETCH_ASSOC);
+                    $number_of_sellers = $fetch_sellers['total_sellers'] ?? 0;
                 ?>
-                <h3><?= $number_of_sellers; ?></h3>
+                <h3><?= htmlspecialchars($number_of_sellers); ?></h3>
                 <p>Sellers Accounts</p>
-                <a href="user_accounts.php" class="btn">View Sellers</a>
+                <a href="../components/sellers.php" class="btn">View Sellers</a>
             </div>
 
             <!-- Total Orders -->

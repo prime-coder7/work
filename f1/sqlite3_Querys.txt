@@ -1,0 +1,77 @@
+-> Query for sqlite3 database:
+
+
+CREATE TABLE "users" (
+  id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  address TEXT NULL,
+  phone TEXT NULL,
+  password TEXT NOT NULL,
+  image TEXT DEFAULT NULL,
+  role TEXT NOT NULL DEFAULT 'user',
+  PRIMARY KEY (id)
+)
+CREATE UNIQUE INDEX `sqlite_autoindex_users_1` ON `users` (id);
+
+--
+
+CREATE TABLE "sellers" (
+  `id` TEXT PRIMARY KEY,
+  `name` TEXT NOT NULL,
+  `email` TEXT NOT NULL UNIQUE,
+  `address` TEXT ,
+  `phone` TEXT ,
+  `password` TEXT NOT NULL,
+  `image` TEXT DEFAULT NULL,
+  `role` TEXT NOT NULL DEFAULT 'seller'
+)
+CREATE UNIQUE INDEX `sqlite_autoindex_sellers_2` ON `sellers` (email);
+CREATE UNIQUE INDEX `sqlite_autoindex_sellers_1` ON `sellers` (id);
+
+--
+
+CREATE TABLE "products" (
+    id TEXT PRIMARY KEY,
+    seller_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,  -- Changed from TEXT to REAL for numeric calculations
+    image TEXT,
+    stock INTEGER NOT NULL CHECK(stock >= 0),  -- Ensuring stock is non-negative
+    product_details TEXT,  -- Removed duplicate 'products_details'
+    description TEXT,  -- Kept 'description' for additional product info
+    status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive')), 
+    FOREIGN KEY (seller_id) REFERENCES sellers(id)
+)
+CREATE UNIQUE INDEX `sqlite_autoindex_products_1` ON `products` (id);
+ 
+--
+
+CREATE TABLE "orders" (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `user_id` TEXT NOT NULL,
+  `seller_id` TEXT NOT NULL,
+  `product_name` TEXT NOT NULL,
+  `status` TEXT CHECK(status IN ('pending', 'shipped', 'delivered', 'canceled')) NOT NULL DEFAULT 'pending',
+  `total_price` DECIMAL(10, 2) NOT NULL,
+  `order_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `customer_name` TEXT NOT NULL,
+  `customer_address` TEXT NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`) ON DELETE CASCADE
+)
+
+--
+
+CREATE TABLE "message" (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sender_id TEXT NOT NULL,
+  receiver_id TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT CHECK(status IN ('unread', 'read')) NOT NULL DEFAULT 'unread',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  reply_to INTEGER,
+  FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (receiver_id) REFERENCES sellers(id) ON DELETE CASCADE,
+  FOREIGN KEY (reply_to) REFERENCES message(id) ON DELETE CASCADE
+)

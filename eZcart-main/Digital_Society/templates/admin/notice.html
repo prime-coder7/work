@@ -1,0 +1,129 @@
+<!-- notice.html -->
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}Notices | Digital Society{% endblock %}
+{% block style %} 
+<style>
+/* Notices list styling */
+.list-group-item {
+  font-size: 1.1rem;
+}
+
+.badge {
+  font-size: 0.9rem;
+}
+</style>
+{% endblock style %}
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Notices</h1>
+
+  <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
+    Post New Notice
+  </button>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action">
+      Maintenance on 15th Feb <span class="badge bg-info float-end">Posted</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action">
+      Annual Meet on 25th Feb <span class="badge bg-info float-end">Posted</span>
+    </a>
+    <!-- Add more notices here -->
+  </div>
+  <!-- notices.html -->
+
+<h1>All Notices</h1>
+<ul>
+    {% for notice in notices %}
+        <li>
+            <a {{ notice.title }}class="list-group-item list-group-item-action">
+            <p>{{ notice.content }}</p>
+            <p>Posted by: {{ notice.posted_by.first_name }} {{ notice.posted_by.last_name }}</p>
+            <p>Posted at: {{ notice.posted_at }}</p></a>
+        </li>
+    {% endfor %}
+</ul>
+
+<!-- Modal for posting a new notice -->
+<div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addNoticeModalLabel">Post New Notice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="noticeForm" method="post" action={% url 'add_notice'%}>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="noticeTitle" class="form-label">Notice Title</label>
+            <input type="text" class="form-control" id="noticeTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="noticeContent" class="form-label">Notice Content</label>
+            <textarea class="form-control" id="noticeContent" name="content" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Post Notice</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  // Handle form submission using AJAX
+  $('#noticeForm').on('submit', function(event) {
+    event.preventDefault();  // Prevent form from submitting normally
+
+    // Get form data
+    var title = $('#noticeTitle').val();
+    var content = $('#noticeContent').val();
+
+    // Send AJAX request to the backend
+    $.ajax({
+      type: 'POST',
+      url: '{% url "add_notice" %}',  // Django URL for adding notice
+      data: {
+        'title': title,
+        'content': content,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF token for security
+      },
+      success: function(response) {
+        // Close modal on success
+        $('#addNoticeModal').modal('hide');
+        
+        // Display success message
+        alert(response.message);
+    
+        // Dynamically update the notice list (you can render the new notice on the page)
+        let newNotice = `
+          <a href="#" class="list-group-item list-group-item-action">
+            ${response.title} <span class="badge bg-info float-end">Posted</span>
+          </a>
+        `;
+        
+        // Append new notice to the top of the list
+        $('.list-group').prepend(newNotice);
+    },
+    
+      error: function() {
+        alert('Error posting notice. Please try again.');
+      }
+    });
+  });
+</script>
+<script>
+  // Sidebar toggle script
+  document.getElementById('toggle-btn').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('content').classList.toggle('active');
+  });
+</script>
+{% endblock js %}
