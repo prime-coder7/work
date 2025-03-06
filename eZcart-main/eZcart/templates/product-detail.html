@@ -579,31 +579,29 @@
 {% block js %}
 
 <script>
-    $jq(document).ready(function () {
-        $jq('#loginModal').on('show.bs.modal', function () {
-            setTimeout(() => {
-                $jq(this).find('.modal-dialog').css({
-                    'position': 'absolute',
-                    'top': '50%',
-                    'left': '50%',
-                    'transform': 'translate(-50%, -50%)',
-                    'margin': '0',
-                    'max-width': '400px',
-                    'width': '100%'
-                });
-            }, 10);
-        });
-    });
-
-    function checkLoginAndAddToCart(productId) {
+	$jq(document).ready(function () {
+		$jq('#loginModal').on('show.bs.modal', function () {
+			$jq(this).find('.modal-dialog').css({
+				'position': 'absolute',
+				'top': '50%',
+				'left': '50%',
+				'transform': 'translate(-50%, -50%)',
+				'margin': '0',
+				'max-width': '400px',
+				'width': '100%'
+			});
+		});
+	});
+	
+	function checkLoginAndAddToCart(productId) {
 		console.log("Function called!");
 	
-		var isLoggedIn = "{{ request.user.is_authenticated }}" === "True";
-		var quantity = $jq('#qty').val();  // Get quantity from the input field
+		var isLoggedIn = {{ request.user.is_authenticated|lower }};  // Django boolean passed correctly
+		var quantity = parseInt($jq('#qty').val()) || 1;  // Ensure valid number
 	
 		if (isLoggedIn) {
 			console.log("User is logged in, adding to cart:", productId);
-			addToCart(productId, quantity);  // Pass quantity to the function
+			addToCart(productId, quantity);
 		} else {
 			console.log("User not logged in, showing login modal...");
 			$jq('#loginModal').modal('show');
@@ -611,17 +609,16 @@
 	}
 	
 	function addToCart(productId, qty) {
-		if (!productId || !qty) {
-			console.error("Product ID or quantity is missing!");  // Debugging log
+		if (!productId || qty <= 0) {
+			console.error("Invalid Product ID or quantity!");
 			return;
 		}
 	
-		// Send both productId and quantity to the server
 		$jq.get("/addToCart", { pid: productId, qty: qty }, function (response) {
 			if (response.success) {
 				swal("Success!", "Product added to cart!", "success");
 			} else {
-				swal("Error!", "Failed to add product!", "error");
+				swal("Error!", response.error || "Failed to add product!", "error");
 			}
 		}).fail(function () {
 			swal("Error!", "Something went wrong!", "error");

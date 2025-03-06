@@ -28,6 +28,9 @@ urlpatterns = [
     path('shop', views.shop, name="shop"),
     path('shoping-cart', views.shoping_cart, name="shoping-cart"),
     path('addToCart', views.addToCart, name="addToCart"),
+    path('remove_from_cart', views.remove_from_cart, name="remove_from_cart"),
+    path('makePayment', views.makePayment, name="makePayment"),
+    path('order-success/', views.order_success, name="order-success"),
     path('whishlist', views.whishlist, name="whishlist"),
     path('product-detail', views.product_detail, name="product-detail"),
     path('features', views.features, name="features"),
@@ -44,6 +47,7 @@ urlpatterns = [
     path('searchProduct', views.searchProduct, name="searchProduct"),
 
     path('profile', views.profile, name="profile"),
+    path('order/<int:order_id>/', views.order_detail, name='order_detail'),
     # path('profile/', include([
     #     path('my_orders', views.my_orders, name="my_orders"),
     #     path('my_wishlist', views.my_wishlist, name="my_wishlist"),

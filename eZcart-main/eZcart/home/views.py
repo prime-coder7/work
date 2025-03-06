@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from home.models import *
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
+import razorpay
 
 # Create your views here. 
 
@@ -76,10 +77,36 @@ def product_detail(request):
     }
     return render(request, "product-detail.html", context)
 
+@login_required(login_url="login_user")
+def shoping_cart(request):
+    user = request.user
+    cart, created = Cart.objects.get_or_create(user=user)
+    
+    # Fetch cart items, it may be empty
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    total = 0
+    # If cart has no items, set total to 0
+    if not cart_items.exists():  
+        cart_items = []  # Ensure cart_items is an empty list
+        total = 0
+    else:
+        for item in cart_items:  
+            total += item.sub_total()  # Add each item's total price to subtotal
+
+    context = {
+        'cart_items': cart_items,
+        'total': total,
+        'is_empty': not bool(cart_items),  # Extra flag to check if cart is empty in template
+    }
+
+    return render(request, "shoping-cart.html", context)
+
+    
 
 def addToCart(request):
-    pid = request.GET.get('pid')  
-    qty = int(request.GET.get('qty', 1))  # Default to 1 if qty is not provided
+    pid = request.GET.get('pid') 
+    qty = int( request.GET.get('qty') )
     user_id = request.user.id if request.user.is_authenticated else None
     
     if not pid:
@@ -89,7 +116,7 @@ def addToCart(request):
     try:
         user = request.user 
         product = Product.objects.get(pk=pid)
-        
+
         # Get the user's cart, or create a new one if it doesn't exist
         cart, created = Cart.objects.get_or_create(user=user)
         
@@ -109,24 +136,77 @@ def addToCart(request):
     except Product.DoesNotExist:
         return JsonResponse({"error": "Product not found"}, status=404)
 
+def remove_from_cart(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        try:
+            cart_item = CartItem.objects.get(product__id=product_id, cart__user=request.user)  # User ka check lagana zaroori hai
+            cart_item.delete()
+            return JsonResponse({"status": "success"})
+        except CartItem.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Item not found"})
+    
+    return JsonResponse({"status": "error", "message": "Invalid request"})
+
 @login_required(login_url="login_user")
-def shoping_cart(request):
-    # Fetch the user's cart
-    user = request.user
-    cart, created = Cart.objects.get_or_create(user=user)
+def checkout(request):
+    if request.method == "POST":
+        total = request.POST.get("total", 0)
+    else:
+        total = 0
+    return render(request, 'checkout.html', {'total': total})
 
-    # Get all cart items for this cart
+def makePayment(request):
+    amount_str = request.GET.get("amount")
+    amount_float = float(amount_str)
+    amount = int(amount_float)
+    print(type(amount))
+
+    client = razorpay.Client(auth=("-", "-"))
+
+    data = { "amount": amount*100 , "currency": "INR", "receipt": "order_rcptid_11" }
+    payment = client.order.create(data=data) 
+
+    return JsonResponse(payment)
+
+@login_required(login_url="login_user")
+@login_required
+def order_success(request):
+    # Fetch user's cart
+    cart = Cart.objects.get(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
+    
+    # Create a new order
+    order = Order.objects.create(
+        user=request.user,
+        total_price=cart.total_cart_price(),
+        status='Completed'
+    )
+    
+    # Add items to the order
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            qty=item.qty
+        )
 
-    # Calculate subtotal, shipping (you can update this based on your logic)
-    subtotal = sum(item.total_price() for item in cart_items)
+    # Optionally, clear the cart after order
+    cart_items.delete()
+
+    # Pass the ordered items to the template
+    ordered_items = order.order_items.all()
+    total_amount = order.total_price
 
     context = {
-        'cart_items': cart_items,
-        'subtotal': subtotal,
+        'ordered_items': ordered_items,
+        'payment_id': "some_payment_id",  # You would need actual payment ID
+        'total_amount': total_amount,
+        'order_number': order.id,
     }
 
-    return render(request, "shoping-cart.html", context)
+    return render(request, 'order-success.html', context)
+
 
 def whishlist(request):
     return render(request, "whishlist.html")
@@ -146,9 +226,6 @@ def about(request):
 def contact(request):
     return render(request, "contact.html")
 
-@login_required(login_url="login_user")
-def checkout(request):
-    return render(request, "checkout.html")
 
 def login_user(request):
     if request.user.is_authenticated:
@@ -173,8 +250,8 @@ def login_user(request):
     return render(request, "login.html")
 
 def signup_user(request):
-    # if request.user.is_authenticated:
-    #     return redirect("index")
+    if request.user.is_authenticated:
+        return redirect("index")
     
     pattern = "^[a-zA-Z0-9]+@[a-zA-Z]+.[a-zA-Z]{2,4}$"
     
@@ -217,7 +294,37 @@ def help(request):
 def profile(request):
     if request.user.is_anonymous:
         return redirect("login_user")
-    return render(request, "profile.html")
+    # Fetch orders for the logged-in user
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')  # Sorted by most recent order
+
+    return render(request, 'profile.html', {'orders': orders})
+
+
+
+def order_detail(request, order_id):
+    # Fetch the order for the logged-in user using order_id
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Ensure the total_price is dynamically calculated based on the OrderItems
+    order.total_price = order.total_order_price()  # Recalculate total price
+    order.save()  # Save to update the order with the new total price
+
+    # Get the items in the order (i.e., all OrderItems for this order)
+    order_items = order.order_items.all()
+
+    # Pass the necessary data to the template
+    return render(
+        request,
+        'order_detail.html',
+        {
+            'order': order,
+            'ordered_items': order_items,
+            'payment_id': "dummy_payment_id",  # Replace with actual payment ID logic if available
+            'total_amount': order.total_price
+        }
+    )
+
+
 
 def my_orders(request):
     context = {

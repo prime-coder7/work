@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h4>Order #{{ order.id }}</h4>
+  <p>Placed on: {{ order.created_at|date:"F j, Y" }}</p>
+  <p>Status: {{ order.status }}</p>
+
+  <h5>Shipping Address:</h5>
+  <p>{{ order.shipping_address }}</p>
+
+  <h5>Products in this order:</h5>
+  <ul class="list-group">
+    {% for item in order_items %}
+      <li class="list-group-item">
+        <strong>{{ item.product.productName }}</strong> (x{{ item.qty }})<br>
+        <small>Price: ${{ item.product.productPrice }}</small><br>
+        <small>Total: ${{ item.total_price }}</small> <!-- Using the total price calculated in the view -->
+      </li>
+    {% empty %}
+      <li class="list-group-item">No products in this order.</li>
+    {% endfor %}
+  </ul>
+
+  <h5 class="mt-3">Order Summary:</h5>
+  <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
+  <p><strong>Shipping:</strong> ${{ order.shipping_cost }}</p>
+  <p><strong>Total:</strong> ${{ order.total }}</p>
+
+  <!-- If the order is completed, show the 'Track Order' button -->
+  {% if order.status == 'Completed' %}
+    <button class="btn btn-success mt-3">Track Order</button>
+  {% endif %}
+  
+  <a href="{% url 'user_profile' %}" class="btn btn-primary mt-3">Back to Profile</a>
+</div>
+{% endblock %}
