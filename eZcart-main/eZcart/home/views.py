@@ -162,7 +162,7 @@ def makePayment(request):
     amount = int(amount_float)
     print(type(amount))
 
-    client = razorpay.Client(auth=("-", "-"))
+    client = razorpay.Client(auth=("rzp_test_wef6Tlaev3Pre9", "OeabKs2qmdPauM2RHWDQb9TG"))
 
     data = { "amount": amount*100 , "currency": "INR", "receipt": "order_rcptid_11" }
     payment = client.order.create(data=data) 
@@ -356,4 +356,3 @@ def home2(request):
 
 def home3(request):
     return render(request, "home-03.html")
-
