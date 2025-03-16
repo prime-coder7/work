@@ -1,0 +1,23 @@
+| Status Code | Category        | Description                                                       | Example Usage                                  |
+|-------------|-----------------|-------------------------------------------------------------------|------------------------------------------------|
+| 1xx         | Informational   | Request received and being processed. Not commonly used.         |                                                |
+| 100         | Informational   | Continue: The client should continue with the request.            | A client can continue sending data after receiving this. |
+| 101         | Informational   | Switching Protocols: The server is switching protocols.          |                                                |
+| 2xx         | Success         | The request was successfully received, understood, and processed. |                                                |
+| 200         | Success         | OK: The request was successful.                                   | A `GET` request to fetch data successfully returns data. |
+| 201         | Success         | Created: The request was successful, and a new resource was created. | A `POST` request to create a new product.      |
+| 204         | Success         | No Content: The request was successful, but no content is returned. | After deleting a resource.                    |
+| 3xx         | Redirection     | The client must take additional action to complete the request.   |                                                |
+| 301         | Redirection     | Moved Permanently: The resource has permanently moved to a new URL. | A resource that has permanently moved to a new URL. |
+| 302         | Redirection     | Found: The resource is temporarily located at a different URL.   | Temporary redirection of resources.            |
+| 304         | Redirection     | Not Modified: The resource has not been modified since the last request. | Cache validation where the resource hasn't changed. |
+| 4xx         | Client Error    | The client has made an error in the request (e.g., invalid data or unauthorized access). |                                                |
+| 400         | Client Error    | Bad Request: The server could not understand the request due to malformed syntax. | Invalid or missing request data.               |
+| 401         | Client Error    | Unauthorized: The client needs to authenticate to access the requested resource. | Accessing a protected endpoint without credentials. |
+| 403         | Client Error    | Forbidden: The server understands the request but refuses to authorize it. | Trying to access a resource without sufficient permissions. |
+| 404         | Client Error    | Not Found: The server could not find the requested resource.     | A non-existent URL or ID being requested.     |
+| 422         | Client Error    | Unprocessable Entity: The server understands the request but cannot process it due to validation errors. | Form submission with invalid data (e.g., missing fields). |
+| 5xx         | Server Error    | The server encountered an error while processing the request.    |                                                |
+| 500         | Server Error    | Internal Server Error: A generic error occurred on the server.   | Server encountered an unexpected issue (e.g., bug). |
+| 502         | Server Error    | Bad Gateway: The server received an invalid response from an upstream server. | When a server is acting as a gateway and another service fails. |
+| 503         | Server Error    | Service Unavailable: The server is temporarily unable to handle the request, often due to maintenance. | Server overload or maintenance downtime.       |

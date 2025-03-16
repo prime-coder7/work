@@ -11,13 +11,19 @@ from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
-# -> CATOGORIES:
+# < ================================== > CATEGORIES < ==================================================================================
 @api_view(['GET'])
 def getCategories(request):
     categories = Category.objects.all()
     s_categories = CategorySerializer(categories, many=True)
     
     return Response(data = s_categories.data)
+
+@api_view(['GET'])
+def getCategory(request, id):
+    category = get_object_or_404(Category, pk=id)
+    s_category = CategorySerializer(category)
+    return Response(data = s_category.data)
 
 @api_view(['POST'])
 def addCategory(request):
@@ -33,10 +39,7 @@ def addCategory(request):
 
 @api_view(['PATCH'])
 def updateCategory(request, id):
-    try:
-        category = Category.objects.get(pk=id)
-    except ObjectDoesNotExist:
-        return Response({'status': '404', 'message': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+    category = get_object_or_404(Category, pk=id)
 
     serializer = CategorySerializer(category, data=request.data, partial=True)
     if serializer.is_valid():
@@ -51,13 +54,32 @@ def deleteCategory(request, id):
     category.delete()
     return Response({'status': '200', 'message': "Category Deleted Successfully"}, status=status.HTTP_200_OK)
 
-# -> PRODUCTS:
+
+# < ================================== > PRODUCTS < ==================================================================================
+
 @api_view(['GET'])
 def getProducts(request):
     products = Product.objects.all()
     s_products = ProductSerializer(products, many=True)
     
     return Response(data = s_products.data)
+
+@api_view(['GET'])
+def getProduct(request, id):
+    product = get_object_or_404(Product, pk=id)
+    s_product = ProductSerializer(product)
+    return Response(data = s_product.data)
+    
+
+@api_view(['GET'])
+def getProductsByCategory(request, c_id):
+    try:
+        products = Product.objects.filter(category_id=c_id)
+        s_products = ProductSerializer(products, many=True)
+        return Response(s_products.data)
+    except Exception as e:
+        return Response({'status': '202', 'errors':str(e), 'message': 'Something Went Wrong'})
+    
 
 @api_view(['POST'])
 def addProduct(request):
@@ -90,3 +112,13 @@ def deleteProduct(request, id):
     product = get_object_or_404(Product, pk=id)  
     product.delete()
     return Response({'status': '200', 'message': "Product Deleted Successfully"}, status=status.HTTP_200_OK)
+
+
+# < ================================== > CART < ==================================================================================
+@api_view(['GET'])
+def getCart(request):
+    return HttpResponse("get cart called")
+
+@api_view(['POST'])
+def addToCart(request):
+    return HttpResponse("add to cart called")

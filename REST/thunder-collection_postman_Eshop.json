@@ -1,0 +1,344 @@
+{
+    "info": {
+        "_postman_id": "6d60db02-77da-46e6-9ce0-73c511f2f340",
+        "name": "Eshop",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "getCategories",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getCategories",
+                    "path": [
+                        "api",
+                        "getCategories"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "getCategory",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getCategory/3",
+                    "path": [
+                        "api",
+                        "getCategory",
+                        "3"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "addCategory",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/addCategory",
+                    "path": [
+                        "api",
+                        "addCategory"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "categoryName",
+                            "value": "Watches1",
+                            "type": "default"
+                        },
+                        {
+                            "key": "categoryDescription",
+                            "value": "Spring 2025",
+                            "type": "default"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "updateCategory",
+            "request": {
+                "method": "PATCH",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/updateCategory/7/",
+                    "path": [
+                        "api",
+                        "updateCategory",
+                        "7"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "  {\n    \"categoryName\": \"Menftngdy\",\n    \"categoryDescription\": \"New Arrivfnals 2025\"\n  }"
+                }
+            }
+        },
+        {
+            "name": "deleteCategory",
+            "request": {
+                "method": "DELETE",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/deleteCategory/7/",
+                    "path": [
+                        "api",
+                        "deleteCategory",
+                        "7"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "getProducts",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getProducts",
+                    "path": [
+                        "api",
+                        "getProducts"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "getProduct",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getProduct/5",
+                    "path": [
+                        "api",
+                        "getProduct",
+                        "5"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "addProduct",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/addProduct",
+                    "path": [
+                        "api",
+                        "addProduct"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                },
+                "body": {
+                    "mode": "urlencoded",
+                    "urlencoded": [
+                        {
+                            "key": "productName",
+                            "value": "Front Pocket Jumper"
+                        },
+                        {
+                            "key": "productPrice",
+                            "value": "520"
+                        },
+                        {
+                            "key": "productQty",
+                            "value": "220"
+                        },
+                        {
+                            "key": "category",
+                            "value": "1"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "getProductByCategory",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getProductsByCategory/2",
+                    "path": [
+                        "api",
+                        "getProductsByCategory",
+                        "2"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "updateProduct",
+            "request": {
+                "method": "PATCH",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/updateProduct/4/",
+                    "path": [
+                        "api",
+                        "updateProduct",
+                        "4"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n    \"productName\": \"Front Pocket Jumper\",\n    \"productPrice\": \"600.00\",\n    \"productQty\": 250,\n    \"category\": 1\n  }"
+                }
+            }
+        },
+        {
+            "name": "deleteProduct",
+            "request": {
+                "method": "DELETE",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/deleteProduct/6/",
+                    "path": [
+                        "api",
+                        "deleteProduct",
+                        "6"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "getCart",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/getCart",
+                    "path": [
+                        "api",
+                        "getCart"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "addCart",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "http://127.0.0.1:8000/api/addToCart",
+                    "path": [
+                        "api",
+                        "addToCart"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "127",
+                        "0",
+                        "0",
+                        "1"
+                    ],
+                    "port": "8000"
+                }
+            }
+        }
+    ]
+}
