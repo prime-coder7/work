@@ -17,11 +17,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from api.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    
+    path('getCategories', getCategories, name='getCategories'),
+    path('addCategory', addCategory, name='addCategory'), 
+    path('updateCategory/<id>', updateCategory, name='updateCategory'), 
+    path('deleteCategory/<id>', deleteCategory, name='deleteCategory'), 
+    
+    
     path('getProducts', getProducts, name='getProducts'),
     path('addProduct', addProduct, name='addProduct'),
-    path('updateProduct', updateProduct, name='updateProduct'),
-    path('deleteProduct', deleteProduct, name='deleteProduct'),
+    path('updateProduct/<id>', updateProduct, name='updateProduct'),
+    path('deleteProduct/<id>', deleteProduct, name='deleteProduct'),
 
 ]
+
+if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL,
+                              document_root=settings.MEDIA_ROOT)
