@@ -215,8 +215,53 @@ def removeCartItem(request, cart_item_id):
 def clearCart(request):
     try:
         cart = get_object_or_404(Cart, user=request.user)
-        cart.cart_items.all().delete()
+        cart.cart_items.all().delete()                      # kyuki model me related_name diya hai
         return Response({'message': 'Cart cleared successfully'}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# < ================================== > ORDERS < ==================================================================================
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOrders(request):
+    orders = Order.objects.filter(user=request.user)
+    if not orders.exists():
+            return Response({'message': 'No Orders Yet!'}, status=status.HTTP_200_OK)
+    s_orders = OrderSerializer(orders, many=True)
+    return Response(s_orders.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createOrder(request):
+    try:
+        cart = get_object_or_404(Cart, user=request.user)
+         
+        if cart.cart_items.count() == 0:
+             return Response({"message": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        payment_type = request.data.get("payment_type", "Cash On Delivery")
+        shipping_address = request.data.get("shipping_address", "Home")
+        
+        total_price = cart.total_cart_price()
+        
+        order = Order.objects.create(user=request.user, total_price=total_price, payment_type=payment_type, shipping_address=shipping_address )
+        
+        for cart_item in cart.cart_items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                qty=cart_item.qty
+            )
+        
+        cart.cart_items.all().delete()
+        
+        order_serializer = OrderSerializer(order)
+        return Response({ "message": "Order placed successfully", "data": order_serializer.data }, status=status.HTTP_201_CREATED)
+        
+    except Exception as e:
+        return Response({"status": "500", "message": "Something went wrong", "errors": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

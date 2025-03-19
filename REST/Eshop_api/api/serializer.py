@@ -47,16 +47,6 @@ class CartItemSerializer(serializers.ModelSerializer):
         resp['product'] = ProductSerializer(instance.product).data
         return resp
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = "__all__"
-            
-    def to_representation(self, instance):
-        resp = super().to_representation(instance)
-        resp['user'] = UserSerializer(instance.user).data
-        return resp
-
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
@@ -67,3 +57,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
         resp['order'] = OrderSerializer(instance.order).data
         resp['product'] = ProductSerializer(instance.product).data
         return resp
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True)
+    total_price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        resp = super().to_representation(instance)
+        resp['user'] = UserSerializer(instance.user).data
+        return resp
+
+    def get_total_price(self, obj):
+        # This calls the total_order_price method of the Order model to calculate total price
+        return obj.total_order_price()
