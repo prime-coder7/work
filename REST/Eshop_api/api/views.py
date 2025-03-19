@@ -1,11 +1,12 @@
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render,HttpResponse
-from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework import status
 from api.serializer import *
 from api.models import *
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 
 
@@ -36,8 +37,8 @@ def addCategory(request):
     except Exception as e:
         return Response({'status': '500', 'errors': str(e), 'message': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['PATCH'])
+@permission_classes([IsAdminUser]) 
 def updateCategory(request, id):
     category = get_object_or_404(Category, pk=id)
 
@@ -49,6 +50,7 @@ def updateCategory(request, id):
         return Response({ 'status': '400', 'errors': serializer.errors, 'message': 'Invalid data' }, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
+@permission_classes([IsAdminUser]) 
 def deleteCategory(request, id):
     category = get_object_or_404(Category, pk=id)  # This will raise 404 automatically if category does not exist
     category.delete()
@@ -70,7 +72,6 @@ def getProduct(request, id):
     s_product = ProductSerializer(product)
     return Response(data = s_product.data)
     
-
 @api_view(['GET'])
 def getProductsByCategory(request, c_id):
     try:
@@ -80,7 +81,6 @@ def getProductsByCategory(request, c_id):
     except Exception as e:
         return Response({'status': '202', 'errors':str(e), 'message': 'Something Went Wrong'})
     
-
 @api_view(['POST'])
 def addProduct(request):
     try:
@@ -106,7 +106,6 @@ def updateProduct(request, id):
     else:
         return Response({ 'status': '400', 'errors': serializer.errors, 'message': 'Invalid data' }, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['DELETE'])
 def deleteProduct(request, id):
     product = get_object_or_404(Product, pk=id)  
@@ -115,10 +114,109 @@ def deleteProduct(request, id):
 
 
 # < ================================== > CART < ==================================================================================
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getCart(request):
-    return HttpResponse("get cart called")
+    try:
+        cart = get_object_or_404(Cart, user=request.user)
+        cart_serializer = CartSerializer(cart)
+        return Response({
+            'cart': cart_serializer.data
+        }, status=status.HTTP_200_OK)
+    except Cart.DoesNotExist:
+        return Response({'status': '404', 'message': 'Cart not found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getCartItems(request):
+    try:
+        cart = get_object_or_404(Cart, user=request.user)
+        cart_items = CartItem.objects.filter(cart=cart)
+        
+        if not cart_items.exists():
+            return Response({'message': 'Cart is empty'}, status=status.HTTP_200_OK)
+        
+        cart_item_serializer = CartItemSerializer(cart_items, many=True)
+        return Response({'cart_items': cart_item_serializer.data}, status=status.HTTP_200_OK)
+    except Cart.DoesNotExist:
+        return Response({'status': '404', 'message': 'Cart not found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def addToCart(request):
-    return HttpResponse("add to cart called")
+    try:
+        serializer = AddToCartSerializer(data=request.data)                 # Validate input using the serializer
+        
+        if serializer.is_valid():
+            product_id = serializer.validated_data['product_id']
+            quantity = serializer.validated_data['quantity']
+            
+            product = get_object_or_404(Product, pk=product_id)
+
+            if quantity > product.productQty:                                # Check stock availability
+                return Response({"error": "Not enough stock available"}, status=status.HTTP_400_BAD_REQUEST)
+
+            cart, created = Cart.objects.get_or_create(user=request.user)
+
+            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+            if created:
+                cart_item.qty = quantity
+                cart_item.save()
+                return Response({'message': 'Item added to cart successfully', 'data': CartItemSerializer(cart_item).data }, status=status.HTTP_201_CREATED)
+            else:
+                cart_item.qty += quantity
+                cart_item.save()
+                return Response({ 'message': 'Product already in cart, quantity updated', 'data': CartItemSerializer(cart_item).data }, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def updateCartItem(request, cart_item_id):
+    try:
+        quantity = request.data.get("quantity")
+        
+        if quantity is None or quantity < 1:
+            return Response({"error": "Quantity must be greater than 0."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        cart_item = get_object_or_404(CartItem, pk=cart_item_id, cart__user=request.user)
+        product = cart_item.product
+        
+        if quantity > product.productQty:
+            return Response({"error": "Not enough stock available"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        cart_item.qty = quantity
+        cart_item.save()
+
+        return Response({'message': 'Cart updated successfully', 'data': CartItemSerializer(cart_item).data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def removeCartItem(request, cart_item_id):
+    try:
+        cart_item = get_object_or_404(CartItem, pk=cart_item_id, cart__user=request.user)
+        cart_item.delete()
+        return Response({'message': 'Cart deleted successfully', 'data': CartItemSerializer(cart_item).data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def clearCart(request):
+    try:
+        cart = get_object_or_404(Cart, user=request.user)
+        cart.cart_items.all().delete()
+        return Response({'message': 'Cart cleared successfully'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

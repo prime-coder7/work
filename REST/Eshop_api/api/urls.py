@@ -22,10 +22,11 @@ urlpatterns = [
 
     # Cart Endpoints
     path('getCart', getCart, name='getCart'),
+    path('getCartItems', getCartItems, name='getCartItems'),
     path('addToCart', addToCart, name='addToCart'),
-    # path('removeFromCart/<int:item_id>/', removeFromCart, name='removeFromCart'),
-    # path('updateCartItem/<int:item_id>/', updateCartItem, name='updateCartItem'),
-    # path('clearCart', clearCart, name='clearCart'),
+    path('updateCartItem/<int:cart_item_id>/', updateCartItem, name='updateCartItem'),
+    path('removeCartItem/<int:cart_item_id>/', removeCartItem, name='removeCartItem'),
+    path('clearCart', clearCart, name='clearCart'),
 
     # Order Endpoints
     # path('getOrders', getOrders, name='getOrders'),

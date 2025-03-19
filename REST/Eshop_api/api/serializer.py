@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from api.models import *
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -16,6 +21,10 @@ class ProductSerializer(serializers.ModelSerializer):
         resp['category'] = CategorySerializer(instance.category).data
         return resp
     
+
+class AddToCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    quantity = serializers.IntegerField(default=1)  
     
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,7 +33,7 @@ class CartSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp['user'] = CategorySerializer(instance.user).data
+        resp['user'] = UserSerializer(instance.user).data
         return resp
     
 class CartItemSerializer(serializers.ModelSerializer):
@@ -34,18 +43,18 @@ class CartItemSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp['cart'] = CategorySerializer(instance.cart).data
-        resp['product'] = CategorySerializer(instance.product).data
+        resp['cart'] = CartSerializer(instance.cart).data
+        resp['product'] = ProductSerializer(instance.product).data
         return resp
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-        
+            
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp['user'] = CategorySerializer(instance.user).data
+        resp['user'] = UserSerializer(instance.user).data
         return resp
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -55,6 +64,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp['order'] = CategorySerializer(instance.order).data
-        resp['product'] = CategorySerializer(instance.product).data
+        resp['order'] = OrderSerializer(instance.order).data
+        resp['product'] = ProductSerializer(instance.product).data
         return resp

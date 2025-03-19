@@ -9,10 +9,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
     def get_image(self, obj):
         if obj.categoryImage:
-            print(f"Category Image URL: {obj.categoryImage.url}")  # Debugging line
             return format_html('<img src="{}" width="50" height="50" />'.format(obj.categoryImage.url))
         return "No Image"
-
     
     get_image.short_description = "Category Image"
 
@@ -48,3 +46,5 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
+admin.site.register(Order)
+admin.site.register(OrderItem)
