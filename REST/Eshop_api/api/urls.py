@@ -23,7 +23,7 @@ urlpatterns = [
     # Cart Endpoints
     path('getCart', getCart, name='getCart'),
     path('getCartItems', getCartItems, name='getCartItems'),
-    path('addToCart', addToCart, name='addToCart'),
+    path('addToCart/<int:product_id>/<int:quantity>', addToCart, name='addToCart'),
     path('updateCartItem/<int:cart_item_id>/', updateCartItem, name='updateCartItem'),
     path('removeCartItem/<int:cart_item_id>/', removeCartItem, name='removeCartItem'),
     path('clearCart', clearCart, name='clearCart'),
@@ -31,7 +31,7 @@ urlpatterns = [
     # Order Endpoints
     path('getOrders', getOrders, name='getOrders'),
     path('createOrder', createOrder, name='createOrder'),
-    # path('getOrder/<int:id>/', getOrder, name='getOrder'),
+    path('getOrder/<int:id>/', getOrder, name='getOrder'),
     # path('updateOrderStatus/<int:id>/', updateOrderStatus, name='updateOrderStatus'),
     # path('cancelOrder/<int:id>/', cancelOrder, name='cancelOrder'),
 

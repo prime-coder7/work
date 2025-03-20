@@ -147,14 +147,8 @@ def getCartItems(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def addToCart(request):
+def addToCart(request, product_id, quantity):
     try:
-        serializer = AddToCartSerializer(data=request.data)                 # Validate input using the serializer
-        
-        if serializer.is_valid():
-            product_id = serializer.validated_data['product_id']
-            quantity = serializer.validated_data['quantity']
-            
             product = get_object_or_404(Product, pk=product_id)
 
             if quantity > product.productQty:                                # Check stock availability
@@ -172,9 +166,7 @@ def addToCart(request):
                 cart_item.qty += quantity
                 cart_item.save()
                 return Response({ 'message': 'Product already in cart, quantity updated', 'data': CartItemSerializer(cart_item).data }, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
     except Exception as e:
         return Response({'status': '500', 'errors': str(e), 'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -265,3 +257,6 @@ def createOrder(request):
         
     except Exception as e:
         return Response({"status": "500", "message": "Something went wrong", "errors": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+def getOrder(request, id):
+    pass
