@@ -149,6 +149,9 @@
 	{
 		margin-top: 60px;
 	}
+	.cart_total_title {
+        max-width: 100%; /* Allow product name to take up full width on small screens */
+    }
 	.checkout_input_50
 	{
 		width: 100%;

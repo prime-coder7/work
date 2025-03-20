@@ -66,13 +66,15 @@
 									<div class="cart_total_title">Product</div>
 									<div class="cart_total_price ml-auto">Total</div>
 								</li>
+								{% for item in cart_items %}
 								<li class="d-flex flex-row align-items-center justify-content-start">
-									<div class="cart_total_title">2 Piece Swimsuit x1</div>
-									<div class="cart_total_price ml-auto">$35.00</div>
+									<div class="cart_total_title mr-2">{{item.product.productName}} ({{item.product.productPrice}}) <b> x{{item.qty}} </b></div>
+									<div class="cart_total_price ml-auto">${{item.sub_total}}</div>
 								</li>
+								{% endfor %}
 								<li class="d-flex flex-row align-items-center justify-content-start">
 									<div class="cart_total_title">Subtotal</div>
-									<div class="cart_total_price ml-auto">$35.00</div>
+									<div class="cart_total_price ml-auto">${{total}}</div>
 								</li>
 								<li class="d-flex flex-row align-items-center justify-content-start">
 									<div class="cart_total_title">Shipping</div>
@@ -122,7 +124,7 @@
 	$jq(document).ready(function(){
 		$jq("#rzp-button1").click(function(e){
 			e.preventDefault();
-			alert("Button Clicked!"); // Debugging ke liye
+			// alert("Button Clicked!"); // Debugging ke liye
 	
 			var userName = "{{ request.user.username }}";
 			var email = "{{ request.user.email }}";
@@ -130,7 +132,7 @@
 	
 			$jq.get('makePayment', {amount: amount}, function(rt){
 				var options = {
-					"key": "-",
+					"key": "rzp_test_wef6Tlaev3Pre9",
 					"amount": rt.amount,
 					"currency": "INR",
 					"name": "eZcart",
@@ -138,8 +140,19 @@
 					"image": window.location.origin + "/static/images/icons/logo-01.png",
 					"order_id": rt.id,
 					"handler": function (response){
-						alert("Payment Successful: " + response.razorpay_payment_id);
-						window.location.href = "/order-success/?payment_id=" + response.razorpay_payment_id;
+						{% comment %} alert(response.razorpay_payment_id);
+						alert(response.razorpay_order_id);
+						alert(response.razorpay_signature) {% endcomment %}
+
+						alert("done payment")
+						$jq.get("create-order", {"payment_id": response.razorpay_payment_id}, function(rt){
+							if(rt.status === "success") {
+								alert("in succeess")
+								window.location.href = rt.redirect_url; // Redirect with order ID
+							} else {
+								alert("Order creation failed. Please contact support.");
+							}
+						});
 					},
 					"prefill": {
 						"name": userName,

@@ -10,6 +10,7 @@ import razorpay
 
 # Create your views here. 
 
+
 def index(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -77,32 +78,7 @@ def product_detail(request):
     }
     return render(request, "product-detail.html", context)
 
-@login_required(login_url="login_user")
-def shoping_cart(request):
-    user = request.user
-    cart, created = Cart.objects.get_or_create(user=user)
-    
-    # Fetch cart items, it may be empty
-    cart_items = CartItem.objects.filter(cart=cart)
 
-    total = 0
-    # If cart has no items, set total to 0
-    if not cart_items.exists():  
-        cart_items = []  # Ensure cart_items is an empty list
-        total = 0
-    else:
-        for item in cart_items:  
-            total += item.sub_total()  # Add each item's total price to subtotal
-
-    context = {
-        'cart_items': cart_items,
-        'total': total,
-        'is_empty': not bool(cart_items),  # Extra flag to check if cart is empty in template
-    }
-
-    return render(request, "shoping-cart.html", context)
-
-    
 
 def addToCart(request):
     pid = request.GET.get('pid') 
@@ -149,12 +125,72 @@ def remove_from_cart(request):
     return JsonResponse({"status": "error", "message": "Invalid request"})
 
 @login_required(login_url="login_user")
-def checkout(request):
-    if request.method == "POST":
-        total = request.POST.get("total", 0)
-    else:
+def shoping_cart(request):
+    user = request.user
+    cart, created = Cart.objects.get_or_create(user=user)
+    
+    # Fetch cart items, it may be empty
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    total = 0
+
+    if not cart_items.exists():  
+        cart_items = [] 
         total = 0
-    return render(request, 'checkout.html', {'total': total})
+    else:
+        for item in cart_items:  
+            total += item.sub_total()  
+
+    context = {
+        'cart_items': cart_items,
+        'total': total,
+        'is_empty': not bool(cart_items),  
+    }
+
+    return render(request, "shoping-cart.html", context)
+
+    
+
+def changeQty(request):
+    data = request.GET
+    qty = int(data.get("qty"))
+    cid = int(data.get("cid"))
+
+    cart_item = get_object_or_404(CartItem, pk=cid)
+
+    new_qty = cart_item.qty + qty
+    if new_qty < 1:
+        return JsonResponse({"status": "error", "message": "Quantity cannot be less than 1"})
+
+    cart_item.qty = new_qty
+    cart_item.save()
+
+    return JsonResponse({"status": "success", "new_qty": cart_item.qty, "total": cart_item.sub_total()})
+
+
+@login_required(login_url="login_user")
+def checkout(request):
+    user = request.user
+    cart, created = Cart.objects.get_or_create(user=user)
+
+    cart_items = CartItem.objects.filter(cart = cart)
+    total = 0
+
+    if not cart_items.exists():
+        cart_items = []
+        total = 0
+    else:
+        for items in cart_items:
+            total += items.sub_total()
+
+    context = {
+        'cart_items' : cart_items,
+        'total' : total,
+        'is_empty' : not bool(cart_items),
+    }
+
+    return render(request, 'checkout.html', context)
+
 
 def makePayment(request):
     amount_str = request.GET.get("amount")
@@ -169,9 +205,11 @@ def makePayment(request):
 
     return JsonResponse(payment)
 
+
 @login_required(login_url="login_user")
-@login_required
-def order_success(request):
+def create_order(request):
+    payment_id = request.GET.get('payment_id', 'N/A')
+
     # Fetch user's cart
     cart = Cart.objects.get(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
@@ -180,7 +218,9 @@ def order_success(request):
     order = Order.objects.create(
         user=request.user,
         total_price=cart.total_cart_price(),
-        status='Completed'
+        status='Completed',
+        payment_id=payment_id,
+        payment_type="Online"
     )
     
     # Add items to the order
@@ -188,24 +228,66 @@ def order_success(request):
         OrderItem.objects.create(
             order=order,
             product=item.product,
+            # price=item.product.productPrice,
             qty=item.qty
         )
 
     # Optionally, clear the cart after order
     cart_items.delete()
 
-    # Pass the ordered items to the template
-    ordered_items = order.order_items.all()
-    total_amount = order.total_price
+    # **Redirect to order-success page with order ID**
+    return JsonResponse({"status": "success", "redirect_url": f"/order-success/{order.id}/"})
+
+
+@login_required(login_url="login_user")
+def order_success(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)  # Fetch specific order
 
     context = {
-        'ordered_items': ordered_items,
-        'payment_id': "some_payment_id",  # You would need actual payment ID
-        'total_amount': total_amount,
+        'ordered_items': order.order_items.all(),
+        'payment_id': order.payment_id,
+        'total_amount': order.total_price,
         'order_number': order.id,
     }
-
     return render(request, 'order-success.html', context)
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from home.models import Order
+
+@login_required(login_url="login_user")
+def order_detail(request, order_id):
+    order = Order.objects.filter(id=order_id, user=request.user).first()
+
+    if not order:
+        return render(
+            request,
+            'order_detail.html',
+            {"order_not_found": True}
+        )
+
+    order.total_price = order.total_order_price()
+    order.save()  
+
+    order_items = order.order_items.all()
+
+    return render(
+        request,
+        'order_detail.html',
+        {
+            'order': order,
+            'ordered_items': order_items,
+            'payment_id': order.payment_id,  
+            'total_amount': order.total_price,
+            "order_not_found": False
+        }
+    )
+
+
+
+
 
 
 def whishlist(request):
@@ -290,39 +372,58 @@ def logout_user(request):
 def help(request):
     return render(request, "help.html")
 
-@login_required(login_url="login_user")
+from django.shortcuts import render, redirect
+from .models import Address, Wishlist
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def profile(request):
-    if request.user.is_anonymous:
-        return redirect("login_user")
-    # Fetch orders for the logged-in user
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')  # Sorted by most recent order
+    # Get user address and wishlist
+    addresses = Address.objects.filter(user=request.user)
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user)  # Assuming you already have an Order model
 
-    return render(request, 'profile.html', {'orders': orders})
+    context = {
+        'addresses': addresses,
+        'wishlist_items': wishlist_items,
+        'orders': orders,
+    }
+    return render(request, 'profile.html', context)
+
+@login_required
+def add_address(request):
+    if request.method == "POST":
+        house_no = request.POST['house_no']
+        street = request.POST['street']
+        city = request.POST['city']
+        state = request.POST['state']
+        zip_code = request.POST['zip_code']
+        
+        Address.objects.create(
+            user=request.user,
+            house_no=house_no,
+            street=street,
+            city=city,
+            state=state,
+            zip_code=zip_code
+        )
+        return redirect('profile')
+
+@login_required
+def add_to_wishlist(request):
+    if request.method == "POST":
+        product_name = request.POST['product_name']
+        product_url = request.POST['product_url']
+        
+        Wishlist.objects.create(
+            user=request.user,
+            product_name=product_name,
+            product_url=product_url
+        )
+        return redirect('profile')
 
 
 
-def order_detail(request, order_id):
-    # Fetch the order for the logged-in user using order_id
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-
-    # Ensure the total_price is dynamically calculated based on the OrderItems
-    order.total_price = order.total_order_price()  # Recalculate total price
-    order.save()  # Save to update the order with the new total price
-
-    # Get the items in the order (i.e., all OrderItems for this order)
-    order_items = order.order_items.all()
-
-    # Pass the necessary data to the template
-    return render(
-        request,
-        'order_detail.html',
-        {
-            'order': order,
-            'ordered_items': order_items,
-            'payment_id': "dummy_payment_id",  # Replace with actual payment ID logic if available
-            'total_amount': order.total_price
-        }
-    )
 
 
 

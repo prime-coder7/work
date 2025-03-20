@@ -152,3 +152,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/images/'
 MEDIA_ROOT = BASE_DIR / "static/images"
 
+
+
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = "rzp_test_wef6Tlaev3Pre9"  # Replace with your test/live key
+RAZORPAY_KEY_SECRET = "OeabKs2qmdPauM2RHWDQb9TG"  # Replace with your secret key

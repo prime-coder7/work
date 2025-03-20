@@ -912,8 +912,8 @@ span {
 	margin-top: 48px;
 	background: #f9f5f5;
 	padding-left: 54px;
-	padding-top: 45px;
-	padding-bottom: 60px;
+	padding-top: 60px; /* Increased top padding */
+	padding-bottom: 80px; /* Increased bottom padding */
 	padding-right: 44px;
 }
 .cart_total
@@ -930,12 +930,15 @@ span {
 .cart_total ul li
 {
 	width: 100%;
-	height: 56px;
-	padding-left: 40px;
-	padding-right: 32px;
+	height: auto; /* Let the height adjust according to content */
+	padding-left: 40px; /* Keep the left padding as it is */
+	padding-right: 32px; /* Keep the right padding as it is */
 	font-size: 14px;
 	color: #2f2f2f;
 	border-bottom: solid 1px #b5b5b5;
+	word-wrap: break-word; /* Allow long product names to wrap to the next line */
+	padding-top: 15px; /* Increased top padding */
+	padding-bottom: 15px; /* Increased bottom padding */
 }
 .cart_total ul li:last-child
 {
@@ -948,6 +951,19 @@ span {
 	font-size: 18px !important;
 	font-weight: 600 !important;
 }
+
+.cart_total_title
+{
+	display: inline-block;
+	max-width: 70%; /* Adjust based on the available space */
+	padding-top: 8px; /* Add top padding to product name */
+	padding-bottom: 8px; /* Add bottom padding to product name */
+	word-wrap: break-word; /* This allows longer product names to wrap to the next line */
+}
+
+
+
+
 .payment_options {
     margin-top: 41px;
     display: flex;

@@ -3,7 +3,6 @@
 {% block title %} Order Successful {% endblock %}
 
 {% block body %}
-<!-- Custom CSS to style the success page -->
 <style>
     .success-message {
         background-color: #e9f7e9;
@@ -31,7 +30,7 @@
     .order-summary-item {
         margin-bottom: 10px;
         display: flex;
-        align-items: center;
+        {% comment %} align-items: center; {% endcomment %}
     }
 
     .order-summary-item img {
@@ -54,12 +53,6 @@
         margin: 10px;
     }
 
-    .confirmation-text {
-        margin-top: 20px;
-        font-size: 18px;
-        color: #333;
-    }
-
     .order-thankyou {
         margin-top: 40px;
         font-size: 24px;
@@ -80,10 +73,7 @@
     }
 </style>
 
-<!-- Container for the page -->
 <div class="container text-center mt-5">
-
-    <!-- Breadcrumb navigation for easy backtracking -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb justify-content-center">
             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
@@ -91,44 +81,45 @@
         </ol>
     </nav>
 
-    <!-- Success Message -->
     <div class="alert alert-success success-message">
         <h2 class="text-success">🎉 Payment Successful! 🎉</h2>
         <p class="lead">Thank you for shopping with us! Your order is now confirmed.</p>
     </div>
 
-    <!-- Order Summary -->
-<div class="order-summary-card">
-    <h4>Order Summary</h4>
-    <div class="order-summary-details">
-        <ul class="list-unstyled">
-            <li><strong>Order Number:</strong> {{ order.id }}</li>
-            <li><strong>Total Amount:</strong> ${{ total_amount }}</li>
-            <li><strong>Shipping Address:</strong> {{ order.shipping_address }}</li>
-        </ul>
-    </div>
-    <p><strong>Payment ID:</strong> <span class="payment-id">{{ payment_id }}</span></p>
-    <p>We’ve received your payment successfully. Keep this Payment ID for your records.</p>
-</div>
-
-
-<!-- Ordered Items -->
-<div class="order-summary-card">
-    <h4>Ordered Items</h4>
-    {% for item in ordered_items %}
-        <div class="order-summary-item">
-            <img src="{{ item.product.productImage.url }}" alt="{{ item.product.productName }}">
-            <div>
-                <p><strong>{{ item.product.productName }}</strong></p>
-                <p>Quantity: {{ item.qty }}</p>
-                <p>Total: ${{ item.sub_total }}</p>
-            </div>
+    <div class="order-summary-card">
+        <h4>Order Summary</h4>
+        <div class="order-summary-details">
+            <ul class="list-unstyled">
+                <li><strong>Order Number:</strong> {{ order_number }}</li>
+                <li><strong>Total Amount:</strong> ₹{{ total_amount|floatformat:2|default:"0.00" }}</li>
+                <li><strong>Shipping Address:</strong> {{ order.shipping_address|default:"Not Provided" }}</li>
+            </ul>
         </div>
-    {% endfor %}
-</div>
+        <p><strong>Razorpay Order ID:</strong> {{ order.razorpay_order_id }}</p>
+        <p><strong>Payment ID:</strong> {{ order.payment_id }}</p>
 
+        <p>We’ve received your payment successfully. Keep this Payment ID for your records.</p>
+    </div>
 
-    <!-- Call to Action Buttons -->
+    <div class="order-summary-card">
+        <h4>Ordered Items</h4>
+        {% if ordered_items %}
+            {% for item in ordered_items %}
+                <div class="order-summary-item">
+                    <img src="{{ item.product.productImage.url|default:'/static/images/placeholder.jpg' }}" 
+                         alt="{{ item.product.productName }}">
+                    <div>
+                        <p><strong>{{ item.product.productName }}</strong></p>
+                        <p>Quantity: {{ item.qty }}</p>
+                        <p>Total: ₹{{ item.qty|floatformat:2|default:"0" }} × ₹{{ item.product.productPrice|floatformat:2|default:"0" }} = ₹{{ item.qty|add:item.product.productPrice|floatformat:2 }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No items found in this order.</p>
+        {% endif %}
+    </div>
+
     <div class="mt-4">
         <a href="{% url 'index' %}" class="btn btn-success btn-lg btn-custom">
             🏠 Go to Home

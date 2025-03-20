@@ -69,13 +69,34 @@ class CartItem(models.Model):
     
 
 
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    house_no = models.IntegerField(null=True)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.street}, {self.city}"
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=200)
+    product_url = models.URLField()
+
 # Order Model (new)
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    shipping_address = models.CharField(max_length=255, default="Home") 
+    shipping_address = models.ForeignKey(Address, default=1, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    payment_id = models.CharField(max_length=100, blank=True, null=True)  
+    payment_type = models.CharField(max_length=100, blank=True, null=True)  
+
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
@@ -88,7 +109,6 @@ class Order(models.Model):
     def subtotal(self):
         return sum(item.sub_total() for item in self.order_items.all())  # Dynamic subtotal calculation
 
-
 # OrderItem Model (new)
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
@@ -99,6 +119,5 @@ class OrderItem(models.Model):
         return self.qty * self.product.productPrice  # Calculate subtotal dynamically based on product price and quantity
 
     def __str__(self):
-        return f"{self.product.productName} (x{self.qty})"
+        return f"{self.product.productName} (x{self.qty})" 
     
-
